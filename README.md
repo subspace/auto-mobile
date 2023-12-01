@@ -1,2 +1,1 @@
-# auto-sdk
-Auto Rust SDK
+# Typescript SDK for Auto
