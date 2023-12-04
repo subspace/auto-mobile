@@ -9,6 +9,10 @@ import { getAutoIdFromSeed, getIdentityFromSeed } from "./did";
 /**
  * TODO: Check for Auto ID if added on-chain to one of the EVM domains
  * (where DID registry is deployed).
+ *
+ * @param api The RPC API URL of the main EVM domain
+ * @param seedPhrase The seed phrase used to generate the addresses to derive the identity
+ * @returns True if the Auto ID exists on-chain, false otherwise
  */
 async function checkIfAutoIdExistsOnChain(
   api: string,
@@ -32,7 +36,13 @@ async function checkIfAutoIdExistsOnChain(
   return false;
 }
 
-// Function to generate addresses from a seed phrase in EVM chain according to BIP-32
+/**
+ * Generates Ethereum addresses from a given seed phrase following BIP-32.
+ *
+ * @param seedPhrase - The seed phrase used to generate the addresses.
+ * @param numOfAddresses - The number of addresses to generate.
+ * @returns An array of generated Ethereum addresses.
+ */
 export function generateEvmAddressesFromSeed(
   seedPhrase: string,
   numOfAddresses: number
@@ -80,7 +90,10 @@ interface AutoWallet {
  * Generate a new wallet with a random seed
  * returning the SS58 address and the EVM addresses
  * NOTE: for simplicity, considered only EVM based domains
- * @returns {SS58Address, [Address]} A new wallet
+ *
+ * @param mainEvmDomainRpcApiUrl The RPC API URL of the main EVM domain
+ * @param numOfEvmChains The number of EVM chains to generate addresses for
+ * @returns The AutoWallet object
  */
 export async function generateAutoWallet(
   mainEvmDomainRpcApiUrl: string,
