@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf dist && rm -rf node_modules",
+    "clean": "rm -rf dist",
+    "clean:all": "rm -rf dist && rm -rf node_modules",
     "start": "tsc && node dist/index.js",
     "lint": "eslint . --ext .ts",
     "eg:gen-evm-addrs": "tsc && node dist/examples/genEvmAddrs.js",

@@ -34,3 +34,15 @@ yarn lint
 yarn eg:gen-evm-addrs
 yarn eg:gen-autoid
 ```
+
+## Clean Output files
+
+```sh
+yarn clean
+```
+
+## Clean All
+
+```sh
+yarn clean:all
+```
