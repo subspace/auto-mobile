@@ -51,6 +51,15 @@ export function generateEvmAddressesFromSeed(
 }
 
 /**
+ * Represents an AutoWallet object.
+ */
+interface AutoWallet {
+  subspaceAddress: string;
+  evmAddresses: string[];
+  autoId: string | bigint;
+}
+
+/**
  * Generate a new wallet with a random seed
  * returning the SS58 address and the EVM addresses
  * NOTE: for simplicity, considered only EVM based domains
@@ -59,7 +68,7 @@ export function generateEvmAddressesFromSeed(
 export async function generateAutoWallet(
   mainEvmDomainRpcApiUrl: string,
   numOfEvmChains: number
-): Promise<[string, string[], string | bigint]> {
+): Promise<AutoWallet> {
   let seedPhrase = "";
 
   // Loop until a valid Auto ID is generated
@@ -96,5 +105,5 @@ export async function generateAutoWallet(
   // Get the EVM addresses from the seed phrase (BIP-32)
   const evmAddresses = generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains);
 
-  return [subspaceAddress, evmAddresses, autoId];
+  return { subspaceAddress, evmAddresses, autoId };
 }
