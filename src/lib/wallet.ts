@@ -51,6 +51,23 @@ export function generateEvmAddressesFromSeed(
 }
 
 /**
+ * Generates a Subspace address from a given seed phrase.
+ *
+ * @param seedPhrase - The seed phrase used to generate the address.
+ * @returns The Subspace address generated from the seed phrase.
+ */
+function generateSubspaceAddress(seedPhrase: string): string {
+  // Create a keyring instance from the seed for the Subspace relay chain
+  const keyring = new Keyring({ type: "sr25519" });
+
+  // Add the user to the keyring from the seed phrase
+  const user = keyring.addFromUri(seedPhrase);
+
+  // Get the SS58 address from the keyring
+  return user.address;
+}
+
+/**
  * Represents an AutoWallet object.
  */
 interface AutoWallet {
@@ -88,19 +105,13 @@ export async function generateAutoWallet(
     }
   }
 
-  // TODO: store the seed phrase in SSS scheme (store in a secure place)
+  // TODO: store the seed phrase to IPFS peers via SSS scheme (store in a secure place)
 
   // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
   const autoId = getAutoIdFromSeed(seedPhrase);
 
-  // Create a keyring instance from the seed for the Subspace relay chain
-  const keyring = new Keyring({ type: "sr25519" });
-
-  // Add the user to the keyring from the seed phrase
-  const user = keyring.addFromUri(seedPhrase);
-
-  // Get the SS58 address from the keyring
-  const subspaceAddress = user.address;
+  // Get the Subspace address from seed phrase
+  const subspaceAddress = generateSubspaceAddress(seedPhrase);
 
   // Get the EVM addresses from the seed phrase (BIP-32)
   const evmAddresses = generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains);
