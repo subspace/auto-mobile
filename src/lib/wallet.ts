@@ -96,7 +96,7 @@ export async function generateAutoWallet(
   // Get the SS58 address from the keyring
   subspaceAddress = user.address;
 
-  // TODO: Get the EVM addresses from the seed phrase (BIP-32)
+  // Get the EVM addresses from the seed phrase (BIP-32)
   evmAddresses = generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains);
 
   return [subspaceAddress, evmAddresses, autoId];
