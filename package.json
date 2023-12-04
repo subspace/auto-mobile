@@ -10,7 +10,8 @@
     "start": "tsc && node dist/index.js",
     "lint": "eslint . --ext .ts",
     "eg:gen-evm-addrs": "tsc && node dist/examples/genEvmAddrs.js",
-    "eg:gen-autoid": "tsc && node dist/examples/genAutoId.js"
+    "eg:gen-auto-id": "tsc && node dist/examples/genAutoId.js",
+    "eg:gen-auto-wallet": "tsc && node dist/examples/genAutoWallet.js"
   },
   "keywords": [],
   "author": "",

@@ -4,7 +4,7 @@
 
 import { getAutoIdFromSeed } from "../index";
 
-async function main() {
+function main() {
   const seedPhrase =
     "lock frost nation imitate party medal knee cigar rough wine document immense";
   console.log("Seed phrase:", seedPhrase);
@@ -13,6 +13,4 @@ async function main() {
   console.log("Auto ID:", autoId);
 }
 
-main()
-  .catch(console.error)
-  .finally(() => process.exit());
+main();

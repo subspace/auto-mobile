@@ -28,6 +28,7 @@ async function checkIfAutoIdExistsOnChain(
 
   // call the DID registry contract to check if the identity exists
 
+  // doesn't exist by default
   return false;
 }
 
@@ -55,7 +56,7 @@ export function generateEvmAddressesFromSeed(
  * NOTE: for simplicity, considered only EVM based domains
  * @returns {SS58Address, [Address]} A new wallet
  */
-export async function generateWallet(
+export async function generateAutoWallet(
   mainEvmDomainRpcApiUrl: string,
   numOfEvmChains: number
 ): Promise<[string, string[], string | bigint]> {
@@ -80,6 +81,8 @@ export async function generateWallet(
       break;
     }
   }
+
+  // TODO: store the seed phrase in SSS scheme (store in a secure place)
 
   // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
   const autoId = getAutoIdFromSeed(seedPhrase);
