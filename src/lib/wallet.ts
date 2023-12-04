@@ -60,9 +60,6 @@ export async function generateAutoWallet(
   mainEvmDomainRpcApiUrl: string,
   numOfEvmChains: number
 ): Promise<[string, string[], string | bigint]> {
-  let subspaceAddress = "",
-    evmAddresses: string[] = [];
-
   let seedPhrase = "";
 
   // Loop until a valid Auto ID is generated
@@ -94,10 +91,10 @@ export async function generateAutoWallet(
   const user = keyring.addFromUri(seedPhrase);
 
   // Get the SS58 address from the keyring
-  subspaceAddress = user.address;
+  const subspaceAddress = user.address;
 
   // Get the EVM addresses from the seed phrase (BIP-32)
-  evmAddresses = generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains);
+  const evmAddresses = generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains);
 
   return [subspaceAddress, evmAddresses, autoId];
 }
