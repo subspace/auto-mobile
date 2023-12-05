@@ -12,7 +12,8 @@
     "eg:gen-evm-addrs": "tsc && node dist/examples/genEvmAddrs.js",
     "eg:gen-auto-id": "tsc && node dist/examples/genAutoId.js",
     "eg:gen-auto-wallet": "tsc && node dist/examples/genAutoWallet.js",
-    "eg:sss": "tsc && node dist/examples/sss.js"
+    "eg:sss": "tsc && node dist/examples/sss.js",
+    "eg:e2e-seed-recovery": "tsc && node dist/examples/e2eSeedRecovery.js"
   },
   "keywords": [],
   "author": "",

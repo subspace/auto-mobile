@@ -5,14 +5,14 @@
 import { Identity } from "@semaphore-protocol/identity";
 
 /**
- * Generate Auto ID from a seed phrase
+ * Generate Auto ID (identity secret) from a seed phrase
  *
  * @param seedPhrase seed phrase to generate the Auto ID (deterministic)
- * @returns Semaphore commitment i.e. Auto ID
+ * @returns Semaphore Identity secret (trapdoor & nullifier) i.e. Auto ID
  */
 export function getAutoIdFromSeed(seedPhrase: string): string | bigint {
   const identity = new Identity(seedPhrase);
-  return identity.commitment.toString();
+  return identity.secret.toString();
 }
 
 /**

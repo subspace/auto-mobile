@@ -17,25 +17,28 @@
  */
 
 import { split, combine } from "shamir-secret-sharing";
-import { toUint8Array, encode, decode } from "./utils";
+import { toUint8Array, Uint8ArrayToAsciiString } from "./utils";
 
-const NUM_OF_SHARES = 255;
-const THRESHOLD = 10;
+export const NUM_OF_SHARES = 255;
+export const THRESHOLD = 10;
 
 /**
  * Write shares to IPFS peers
  *
  * @param shares The SSS shares
  */
-async function writeToIpfs(shares: string[]) {}
+// async function writeToIpfs(rpcApiUrl: string, shares: string[]) {}
 
 /**
  * Read shares from IPFS peers
  * @param shares The SSS shares
  */
-async function readFromIpfs(shares: string[]): Promise<string> {
-  return "";
-}
+// async function readFromIpfs(
+//   rpcApiUrl: string,
+//   shares: string[]
+// ): Promise<string> {
+//   return "";
+// }
 
 /**
  * Generate SSS shares from a seed phrase
@@ -51,10 +54,15 @@ export async function generateSssSharesFrom(
   const secret = toUint8Array(seedPhrase);
   const shares = await split(secret, NUM_OF_SHARES, THRESHOLD);
 
-  // const sharesAsBase64 = encode(shares);
+  // NOTE: Base64 encoding or toString not used as there was an issue related to different size of shares
+  // during encoding/conversion. Hence, needed to pad the shares to the same length. So, we don't use either.
+  // Now, the shares can be stored as is in IPFS.
 
-  // TODO: write shares (as base64 string) to IPFS peers
-  // writeToIpfs(sharesAsBase64);
+  // TODO: write/distribute shares (as base64 string) to IPFS peers
+  // writeToIpfs(sharesAsString);
+
+  // Then, we need to maintain a lookup table (p2p DB) of the CID of the shares
+  // for the user to retrieve the shares from IPFS peers.
 
   return shares;
 }
@@ -63,19 +71,20 @@ export async function generateSssSharesFrom(
  * Recover seed phrase from SSS shares
  *
  * @param shares The SSS shares at least 10 shares
- * @returns The seed phrase
+ * @returns The reconstructed seed phrase as ASCII string
  */
 export async function recoverSeedFrom(shares: Uint8Array[]): Promise<string> {
   if (shares.length < 10) {
     throw new Error(`At least ${THRESHOLD} shares are required for recovery`);
   }
-
-  // TODO: read shares (as base64 string) from IPFS peers
-  // const sharesAsBase64 = await readFromIpfs()
-  // const shares = decode(sharesAsBase64);
+  // TODO: read/retrieve/fetch shares (string) from IPFS peers
+  // const shares = await readFromIpfs()
 
   // reconstruct the secret
   const reconstructedSeedPhrase = await combine(shares);
 
-  return reconstructedSeedPhrase.toString();
+  // Convert Uint8Array to ASCII string
+  const seedPhrase = Uint8ArrayToAsciiString(reconstructedSeedPhrase);
+
+  return seedPhrase;
 }
