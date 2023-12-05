@@ -14,4 +14,6 @@ async function main() {
   console.log("Auto ID:", autoWallet.autoId);
 }
 
-main();
+main()
+  .catch(console.error)
+  .finally(() => process.exit());
