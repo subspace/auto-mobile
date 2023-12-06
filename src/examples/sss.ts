@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// NOTE: As the `shamir-secret-sharing` package is not yet published, we need to add
-// this file: `index.d.ts` (copy from `shamir-secret-sharing` package) to root folder
-// of this project.
+// NOTE: As the `shamir-secret-sharing` package is not yet published,
+// `index.d.ts` file needs to be generated during `$ yarn` or `$ yarn install`
+// in the root folder
 import { split, combine } from "shamir-secret-sharing";
 import assert from "assert";
 import crypto from "crypto";
@@ -12,33 +12,27 @@ async function splitUserInput() {
   const seedPhrase =
     "lock frost nation imitate party medal knee cigar rough wine document immense";
   const secret = toUint8Array(seedPhrase);
-  const [share1, share2, share3] = await split(Buffer.from(secret), {
-    shares: 3,
-    threshold: 2,
-  });
+  const [share1, share2, share3] = await split(secret, 3, 2);
 
   const reconstructed = await combine([share1, share3]);
 
   assert.strictEqual(
     Buffer.from(reconstructed).toString("base64"),
     Buffer.from(secret).toString("base64"),
-    "Reconstructed secret does not match the original secret",
+    "Reconstructed secret does not match the original secret"
   );
 }
 
 /// Example of splitting random entropy
 async function splitRandomEntropy() {
   const randomEntropy = crypto.getRandomValues(new Uint8Array(16));
-  const [share1, share2, share3] = await split(Buffer.from(randomEntropy), {
-    shares: 3,
-    threshold: 2,
-  });
+  const [share1, share2, share3] = await split(randomEntropy, 3, 2);
   const reconstructed = await combine([share2, share3]);
 
   assert.strictEqual(
     Buffer.from(reconstructed).toString("base64"),
     Buffer.from(randomEntropy).toString("base64"),
-    "Reconstructed secret does not match the original random entropy",
+    "Reconstructed secret does not match the original random entropy"
   );
 }
 
@@ -50,20 +44,17 @@ async function splitSymmetricKey() {
       length: 256,
     },
     true,
-    ["encrypt", "decrypt"],
+    ["encrypt", "decrypt"]
   );
   const exportedKeyBuffer = await crypto.subtle.exportKey("raw", key);
   const exportedKey = new Uint8Array(exportedKeyBuffer);
-  const [share1, share2, share3] = await split(Buffer.from(exportedKey), {
-    shares: 3,
-    threshold: 2,
-  });
+  const [share1, share2, share3] = await split(exportedKey, 3, 2);
   const reconstructed = await combine([share2, share1]);
 
   assert.strictEqual(
     Buffer.from(reconstructed).toString("base64"),
     Buffer.from(exportedKey).toString("base64"),
-    "Reconstructed secret does not match the original exported key",
+    "Reconstructed secret does not match the original exported key"
   );
 }
 

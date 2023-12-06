@@ -1,7 +1,10 @@
 import { getRandom10Shares } from "../lib/utils";
-import { generateSssSharesFrom, recoverSeedFrom } from "../lib/recovery";
+import {
+  generateSssSharesFrom,
+  recoverSeedFrom,
+  NUM_OF_SHARES,
+} from "../lib/recovery";
 import assert from "assert";
-import { NUM_OF_SHARES } from "../lib/recovery";
 
 async function main() {
   const seedPhrase =
@@ -11,17 +14,17 @@ async function main() {
 
   // select any random 10 shares
   const randomShares: Uint8Array[] = getRandom10Shares(shares);
-  const randomSharesBuffers: Buffer[] = randomShares.map((share) =>
-    Buffer.from(share),
-  );
+  // const randomSharesBuffers: Buffer[] = randomShares.map((share) =>
+  //   Buffer.from(share)
+  // );
 
   // recover seed phrase from random shares
-  const recoveredSeedPhrase = await recoverSeedFrom(randomSharesBuffers);
+  const recoveredSeedPhrase = await recoverSeedFrom(randomShares);
 
   assert.strictEqual(
     recoveredSeedPhrase,
     seedPhrase,
-    "Recovered seed phrase does not match the original seed phrase",
+    "Recovered seed phrase does not match the original seed phrase"
   );
 }
 
