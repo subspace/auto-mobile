@@ -34,6 +34,8 @@ yarn lint
 yarn eg:gen-evm-addrs
 yarn eg:gen-autoid
 yarn eg:gen-auto-wallet
+yarn eg:sss
+yarn eg:e2e-seed-recovery
 ```
 
 ## Clean Output files

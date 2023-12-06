@@ -29,7 +29,7 @@ export const THRESHOLD = 10;
  * @returns The SSS shares
  */
 export async function generateSssSharesFrom(
-  seedPhrase: string
+  seedPhrase: string,
 ): Promise<Uint8Array[]> {
   // TODO:
   // convert to 8-bit bytes i.e. byte array

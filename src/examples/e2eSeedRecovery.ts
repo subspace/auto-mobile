@@ -24,7 +24,7 @@ async function main() {
   assert.strictEqual(
     recoveredSeedPhrase,
     seedPhrase,
-    "Recovered seed phrase does not match the original seed phrase"
+    "Recovered seed phrase does not match the original seed phrase",
   );
 }
 

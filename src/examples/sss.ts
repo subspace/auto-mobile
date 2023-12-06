@@ -19,7 +19,7 @@ async function splitUserInput() {
   assert.strictEqual(
     Buffer.from(reconstructed).toString("base64"),
     Buffer.from(secret).toString("base64"),
-    "Reconstructed secret does not match the original secret"
+    "Reconstructed secret does not match the original secret",
   );
 }
 
@@ -32,7 +32,7 @@ async function splitRandomEntropy() {
   assert.strictEqual(
     Buffer.from(reconstructed).toString("base64"),
     Buffer.from(randomEntropy).toString("base64"),
-    "Reconstructed secret does not match the original random entropy"
+    "Reconstructed secret does not match the original random entropy",
   );
 }
 
@@ -44,7 +44,7 @@ async function splitSymmetricKey() {
       length: 256,
     },
     true,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   );
   const exportedKeyBuffer = await crypto.subtle.exportKey("raw", key);
   const exportedKey = new Uint8Array(exportedKeyBuffer);
@@ -54,7 +54,7 @@ async function splitSymmetricKey() {
   assert.strictEqual(
     Buffer.from(reconstructed).toString("base64"),
     Buffer.from(exportedKey).toString("base64"),
-    "Reconstructed secret does not match the original exported key"
+    "Reconstructed secret does not match the original exported key",
   );
 }
 
