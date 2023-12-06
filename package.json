@@ -15,8 +15,7 @@
     "eg:gen-auto-id": "tsc && node dist/examples/genAutoId.js",
     "eg:gen-auto-wallet": "tsc && node dist/examples/genAutoWallet.js",
     "eg:sss": "tsc && node dist/examples/sss.js",
-    "eg:e2e-seed-recovery": "tsc && node dist/examples/e2eSeedRecovery.js",
-    "eg:rn-storage": "tsc && node dist/examples/rnStorage.js"
+    "eg:e2e-seed-recovery": "tsc && node dist/examples/e2eSeedRecovery.js"
   },
   "keywords": [],
   "author": "",
@@ -35,7 +34,6 @@
     "@polkadot/api": "^10.11.1",
     "@semaphore-protocol/identity": "^3.15.1",
     "ethers": "^6.9.0",
-    "rn-secure-storage": "https://github.com/circuitid/rn-secure-storage#4773a08e483f177b61108287e87ac96f3102831e",
     "shamir-secret-sharing": "https://github.com/abhi3700/shamir-secret-sharing#d5f2fe6f187d5b1aeefd7d258885504d2ff07e6d"
   }
 }
