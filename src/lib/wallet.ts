@@ -28,7 +28,7 @@ import { getAutoIdFromSeed, getIdentityFromSeed } from "./did";
  */
 async function checkIfAutoIdExistsOnChain(
   api: string,
-  seedPhrase: string
+  seedPhrase: string,
 ): Promise<boolean> {
   // TODO: connect to the main EVM domain (where DID registry is deployed)
 
@@ -57,7 +57,7 @@ async function checkIfAutoIdExistsOnChain(
  */
 export function generateEvmAddressesFromSeed(
   seedPhrase: string,
-  numOfAddresses: number
+  numOfAddresses: number,
 ): string[] {
   const addresses: string[] = [];
   const mnemonic = Mnemonic.fromPhrase(seedPhrase); // Convert the seed phrase to mnemonic
@@ -109,7 +109,7 @@ interface AutoWallet {
  */
 export async function generateAutoWallet(
   mainEvmDomainRpcApiUrl: string,
-  numOfEvmChains: number
+  numOfEvmChains: number,
 ): Promise<AutoWallet> {
   let seedPhrase = "";
 
@@ -121,7 +121,7 @@ export async function generateAutoWallet(
     // TODO: Check for a valid Auto ID
     const isAutoIdPreExist = await checkIfAutoIdExistsOnChain(
       mainEvmDomainRpcApiUrl,
-      seedPhrase
+      seedPhrase,
     );
 
     if (!isAutoIdPreExist) {

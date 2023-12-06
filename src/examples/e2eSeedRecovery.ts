@@ -10,15 +10,18 @@ async function main() {
   assert.equal(shares.length, NUM_OF_SHARES);
 
   // select any random 10 shares
-  const randomShares = getRandom10Shares(shares);
+  const randomShares: Uint8Array[] = getRandom10Shares(shares);
+  const randomSharesBuffers: Buffer[] = randomShares.map((share) =>
+    Buffer.from(share),
+  );
 
   // recover seed phrase from random shares
-  const recoveredSeedPhrase = await recoverSeedFrom(randomShares);
+  const recoveredSeedPhrase = await recoverSeedFrom(randomSharesBuffers);
 
   assert.strictEqual(
     recoveredSeedPhrase,
     seedPhrase,
-    "Recovered seed phrase does not match the original seed phrase"
+    "Recovered seed phrase does not match the original seed phrase",
   );
 }
 

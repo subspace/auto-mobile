@@ -61,7 +61,7 @@ export function getRandom10Shares(shares: Uint8Array[]): Uint8Array[] {
   assert.equal(
     randomShares.length,
     THRESHOLD,
-    "Random shares length is not 10"
+    `Random shares length is not ${THRESHOLD}`
   );
 
   return randomShares;
