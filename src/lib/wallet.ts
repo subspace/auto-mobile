@@ -1,6 +1,18 @@
 /* eslint-disable no-constant-condition */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+/**
+ * Wallet module for Auto.
+ * This module creates
+ * - a new wallet with a random seed phrase with
+ * addresses for relay chain and EVM chains (based on BIP-32) and
+ * an Auto ID (based on Semaphore Identity).
+ * - an unified account with a unique Auto ID (based on Semaphore Identity) added
+ * on-chain to one of the EVM domains (where DID registry is deployed).
+ *
+ * Doc: https://www.notion.so/subspacelabs/Subspace-Unified-Account-Technical-6b73858668984751bc3e10356721990b
+ */
+
 import { Keyring } from "@polkadot/api";
 import { mnemonicGenerate } from "@polkadot/util-crypto";
 import { Mnemonic, ethers } from "ethers";
@@ -16,7 +28,7 @@ import { getAutoIdFromSeed, getIdentityFromSeed } from "./did";
  */
 async function checkIfAutoIdExistsOnChain(
   api: string,
-  seedPhrase: string
+  seedPhrase: string,
 ): Promise<boolean> {
   // TODO: connect to the main EVM domain (where DID registry is deployed)
 
@@ -45,7 +57,7 @@ async function checkIfAutoIdExistsOnChain(
  */
 export function generateEvmAddressesFromSeed(
   seedPhrase: string,
-  numOfAddresses: number
+  numOfAddresses: number,
 ): string[] {
   const addresses: string[] = [];
   const mnemonic = Mnemonic.fromPhrase(seedPhrase); // Convert the seed phrase to mnemonic
@@ -97,7 +109,7 @@ interface AutoWallet {
  */
 export async function generateAutoWallet(
   mainEvmDomainRpcApiUrl: string,
-  numOfEvmChains: number
+  numOfEvmChains: number,
 ): Promise<AutoWallet> {
   let seedPhrase = "";
 
@@ -109,7 +121,7 @@ export async function generateAutoWallet(
     // TODO: Check for a valid Auto ID
     const isAutoIdPreExist = await checkIfAutoIdExistsOnChain(
       mainEvmDomainRpcApiUrl,
-      seedPhrase
+      seedPhrase,
     );
 
     if (!isAutoIdPreExist) {
