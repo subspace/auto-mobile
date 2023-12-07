@@ -16,6 +16,7 @@
 import { Keyring } from "@polkadot/api";
 import { mnemonicGenerate } from "@polkadot/util-crypto";
 import { Mnemonic, ethers } from "ethers";
+import { deferTask } from "../utils/deferTask";
 import { getAutoIdFromSeed, getIdentityFromSeed } from "./did";
 
 /**
@@ -116,7 +117,7 @@ export async function generateAutoWallet(
   // Loop until a valid Auto ID is generated
   while (true) {
     // Generate a new random seed phrase
-    seedPhrase = mnemonicGenerate();
+    seedPhrase = await deferTask(() => mnemonicGenerate());
 
     // TODO: Check for a valid Auto ID
     const isAutoIdPreExist = await checkIfAutoIdExistsOnChain(
@@ -133,13 +134,17 @@ export async function generateAutoWallet(
   // TODO: store the seed phrase to IPFS peers via SSS scheme (store in a secure place)
 
   // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
-  const autoId = getAutoIdFromSeed(seedPhrase);
+  const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
 
   // Get the Subspace address from seed phrase
-  const subspaceAddress = generateSubspaceAddress(seedPhrase);
+  const subspaceAddress = await deferTask(() =>
+    generateSubspaceAddress(seedPhrase)
+  );
 
   // Get the EVM addresses from the seed phrase (BIP-32)
-  const evmAddresses = generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains);
+  const evmAddresses = await deferTask(() =>
+    generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
+  );
 
   return { subspaceAddress, evmAddresses, autoId };
 }
