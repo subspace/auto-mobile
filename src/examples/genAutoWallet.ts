@@ -6,6 +6,9 @@ import { generateAutoWallet } from "../index";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 
 async function main() {
+  console.log(
+    "\n=======Generate Auto Wallet (Unified Subspace account)========",
+  );
   await cryptoWaitReady(); // Wait for WASM crypto initialization
   const novaEvmDomainRpcApiUrl = "https://nova.gemini-3g.subspace.network/ws";
   const autoWallet = await generateAutoWallet(novaEvmDomainRpcApiUrl, 5);

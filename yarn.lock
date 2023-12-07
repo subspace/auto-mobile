@@ -3040,9 +3040,9 @@ semver@^7.5.3, semver@^7.5.4:
   dependencies:
     lru-cache "^6.0.0"
 
-"shamir-secret-sharing@https://github.com/abhi3700/shamir-secret-sharing#d5f2fe6f187d5b1aeefd7d258885504d2ff07e6d":
+"shamir-secret-sharing@https://github.com/privy-io/shamir-secret-sharing":
   version "0.0.3"
-  resolved "https://github.com/abhi3700/shamir-secret-sharing#d5f2fe6f187d5b1aeefd7d258885504d2ff07e6d"
+  resolved "https://github.com/privy-io/shamir-secret-sharing#c2220064546ee94c649b6113022a182ee0c49bc0"
 
 shebang-command@^2.0.0:
   version "2.0.0"

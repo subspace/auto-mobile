@@ -11,6 +11,7 @@
     "start": "tsc && node dist/index.js",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "eg:all": "tsc && node dist/examples/genEvmAddrs.js && node dist/examples/genAutoId.js && node dist/examples/genAutoWallet.js && node dist/examples/sss.js && node dist/examples/e2eSeedRecovery.js",
     "eg:gen-evm-addrs": "tsc && node dist/examples/genEvmAddrs.js",
     "eg:gen-auto-id": "tsc && node dist/examples/genAutoId.js",
     "eg:gen-auto-wallet": "tsc && node dist/examples/genAutoWallet.js",
@@ -34,6 +35,6 @@
     "@polkadot/api": "^10.11.1",
     "@semaphore-protocol/identity": "^3.15.1",
     "ethers": "^6.9.0",
-    "shamir-secret-sharing": "https://github.com/abhi3700/shamir-secret-sharing#d5f2fe6f187d5b1aeefd7d258885504d2ff07e6d"
+    "shamir-secret-sharing": "https://github.com/privy-io/shamir-secret-sharing"
   }
 }

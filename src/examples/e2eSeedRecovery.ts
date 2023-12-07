@@ -7,6 +7,7 @@ import {
 import assert from "assert";
 
 async function main() {
+  console.log("\n=======E2E Seed Recovery========");
   const seedPhrase =
     "lock frost nation imitate party medal knee cigar rough wine document immense";
   const shares = await generateSssSharesFrom(seedPhrase);
@@ -14,9 +15,6 @@ async function main() {
 
   // select any random 10 shares
   const randomShares: Uint8Array[] = getRandom10Shares(shares);
-  // const randomSharesBuffers: Buffer[] = randomShares.map((share) =>
-  //   Buffer.from(share)
-  // );
 
   // recover seed phrase from random shares
   const recoveredSeedPhrase = await recoverSeedFrom(randomShares);

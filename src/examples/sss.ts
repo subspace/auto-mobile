@@ -59,6 +59,7 @@ async function splitSymmetricKey() {
 }
 
 async function main() {
+  console.log("\n=======SSS Examples========");
   await splitUserInput();
   await splitRandomEntropy();
   await splitSymmetricKey();

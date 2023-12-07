@@ -5,6 +5,8 @@
 import { generateEvmAddressesFromSeed } from "../index";
 
 function main() {
+  console.log("\n=======Generate EVM addresses from seed phrase========");
+
   const seedPhrase =
     "lock frost nation imitate party medal knee cigar rough wine document immense";
   console.log("Seed phrase:", seedPhrase);
