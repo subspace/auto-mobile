@@ -2,9 +2,9 @@
  * Generate EVM addresses (following BIP-32) from a seed phrase
  */
 
-import { generateEvmAddressesFromSeed } from "../index";
+import { generateEvmAddressesFromSeed } from "@subspace/core";
 
-function main() {
+export function genEvmAddrs() {
   console.log("\n=======Generate EVM addresses from seed phrase========");
 
   const seedPhrase =
@@ -15,4 +15,4 @@ function main() {
   console.log("Addresses:", addresses);
 }
 
-main();
+genEvmAddrs();

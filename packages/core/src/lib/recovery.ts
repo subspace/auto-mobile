@@ -16,8 +16,8 @@
  * More on this: https://www.notion.so/subspacelabs/Account-Recovery-Technical-c9a23398a96b4c7c999ba1e239479b8d#1c8f8e2ca12345b6b080e591525487eb
  */
 
-import { split, combine } from "shamir-secret-sharing";
-import { toUint8Array, Uint8ArrayToAsciiString } from "./utils";
+import { combine, split } from "@subspace/shamir-secret-sharing";
+import { Uint8ArrayToAsciiString, toUint8Array } from "./utils";
 
 export const NUM_OF_SHARES = 255;
 export const THRESHOLD = 10;
@@ -29,13 +29,14 @@ export const THRESHOLD = 10;
  * @returns The SSS shares
  */
 export async function generateSssSharesFrom(
-  seedPhrase: string,
+  seedPhrase: string
 ): Promise<Uint8Array[]> {
   // TODO:
   // convert to 8-bit bytes i.e. byte array
   const secret = toUint8Array(seedPhrase);
   const shares = await split(secret, NUM_OF_SHARES, THRESHOLD);
 
+  console.log("generateSssSharesFrom", { shares, secret });
   // NOTE: Base64 encoding or toString not used as there was an issue related to different size of shares
   // during encoding/conversion. Thereby, needed to pad the shares to the same length. So, we don't use either.
 
@@ -57,6 +58,7 @@ export async function recoverSeedFrom(shares: Uint8Array[]): Promise<string> {
   }
   // TODO: read/retrieve/fetch shares (string) from trusted/non-trusted setup
 
+  console.log("recoverSeedFrom", { shares });
   // reconstruct the secret
   const reconstructedSeedPhrase = await combine(shares);
 

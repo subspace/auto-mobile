@@ -1,7 +1,6 @@
-# Auto
+# Typescript Core SDK for Auto `@subspace/core`
 
 ## Description
-This project is a monorepo that has built-in the core modules.
 
 **Modules**:
 
@@ -17,7 +16,9 @@ This project is a monorepo that has built-in the core modules.
 yarn
 ```
 
-```sh
+## Development
+
+```
 yarn dev
 ```
 
@@ -32,7 +33,6 @@ yarn build
 ```sh
 yarn lint
 ```
-
 
 ## Clean Output files
 

@@ -1,40 +1,35 @@
 {
-  "name": "auto-sdk-ts",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@subspace/auto",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "private": true,
   "scripts": {
-    "postinstall": "node prebuild.js",
-    "build": "tsc",
-    "clean": "rm -rf dist",
-    "clean:all": "rm -rf dist && rm -rf node_modules",
-    "start": "tsc && node dist/index.js",
-    "lint": "eslint . --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "eg:all": "tsc && node dist/examples/genEvmAddrs.js && node dist/examples/genAutoId.js && node dist/examples/genAutoWallet.js && node dist/examples/sss.js && node dist/examples/e2eSeedRecovery.js",
-    "eg:gen-evm-addrs": "tsc && node dist/examples/genEvmAddrs.js",
-    "eg:gen-auto-id": "tsc && node dist/examples/genAutoId.js",
-    "eg:gen-auto-wallet": "tsc && node dist/examples/genAutoWallet.js",
-    "eg:sss": "tsc && node dist/examples/sss.js",
-    "eg:e2e-seed-recovery": "tsc && node dist/examples/e2eSeedRecovery.js"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "clean": "turbo run clean",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.10",
-    "@typescript-eslint/eslint-plugin": "^6.13.1",
-    "@typescript-eslint/parser": "^6.13.1",
+    "@typescript-eslint/eslint-plugin": "6.13.2",
+    "@typescript-eslint/parser": "6.13.2",
     "eslint": "^8.55.0",
     "jest": "^29.7.0",
     "prettier": "^3.1.0",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "turbo": "1.11.1"
   },
   "dependencies": {
-    "@polkadot/api": "^10.11.1",
-    "@semaphore-protocol/identity": "^3.15.1",
-    "ethers": "^6.9.0",
-    "shamir-secret-sharing": "https://github.com/privy-io/shamir-secret-sharing"
+    "@polkadot/util-crypto": "12.6.1"
+  },
+  "packageManager": "yarn@1.22.21",
+  "engines": {
+    "node": ">=18"
   }
 }

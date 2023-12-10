@@ -2,9 +2,9 @@
  * Get auto id
  */
 
-import { getAutoIdFromSeed } from "../index";
+import { getAutoIdFromSeed } from "@subspace/core";
 
-function main() {
+export function genAutoId() {
   console.log("\n=======Generate Auto ID from seed phrase========");
   const seedPhrase =
     "lock frost nation imitate party medal knee cigar rough wine document immense";
@@ -14,4 +14,4 @@ function main() {
   console.log("Auto ID:", autoId);
 }
 
-main();
+genAutoId();

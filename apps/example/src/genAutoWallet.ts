@@ -2,12 +2,12 @@
  * Generate Auto wallet for an individual as unified account with
  * multiple addresses on Subspace Network (relay + domains).
  */
-import { generateAutoWallet } from "../index";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
+import { generateAutoWallet } from "@subspace/core";
 
-async function main() {
+export async function genAutoWallet() {
   console.log(
-    "\n=======Generate Auto Wallet (Unified Subspace account)========",
+    "\n=======Generate Auto Wallet (Unified Subspace account)========"
   );
   await cryptoWaitReady(); // Wait for WASM crypto initialization
   const novaEvmDomainRpcApiUrl = "https://nova.gemini-3g.subspace.network/ws";
@@ -17,6 +17,6 @@ async function main() {
   console.log("Auto ID:", autoWallet.autoId);
 }
 
-main()
+genAutoWallet()
   .catch(console.error)
   .finally(() => process.exit());

@@ -2,10 +2,10 @@
 // NOTE: As the `shamir-secret-sharing` package is not yet published,
 // `index.d.ts` file needs to be generated during `$ yarn` or `$ yarn install`
 // in the root folder
-import { split, combine } from "shamir-secret-sharing";
-import assert from "assert";
-import crypto from "crypto";
-import { toUint8Array } from "../lib/utils";
+import { toUint8Array } from "@subspace/core";
+import { combine, split } from "@subspace/shamir-secret-sharing";
+import { strictEqual } from "assert";
+import { getRandomValues, subtle } from "crypto";
 
 /// Example of splitting user input
 async function splitUserInput() {
@@ -16,55 +16,55 @@ async function splitUserInput() {
 
   const reconstructed = await combine([share1, share3]);
 
-  assert.strictEqual(
+  strictEqual(
     Buffer.from(reconstructed).toString("base64"),
     Buffer.from(secret).toString("base64"),
-    "Reconstructed secret does not match the original secret",
+    "Reconstructed secret does not match the original secret"
   );
 }
 
 /// Example of splitting random entropy
 async function splitRandomEntropy() {
-  const randomEntropy = crypto.getRandomValues(new Uint8Array(16));
+  const randomEntropy = getRandomValues(new Uint8Array(16));
   const [share1, share2, share3] = await split(randomEntropy, 3, 2);
   const reconstructed = await combine([share2, share3]);
 
-  assert.strictEqual(
+  strictEqual(
     Buffer.from(reconstructed).toString("base64"),
     Buffer.from(randomEntropy).toString("base64"),
-    "Reconstructed secret does not match the original random entropy",
+    "Reconstructed secret does not match the original random entropy"
   );
 }
 
 // Example of splitting symmetric key
 async function splitSymmetricKey() {
-  const key = await crypto.subtle.generateKey(
+  const key = await subtle.generateKey(
     {
       name: "AES-GCM",
       length: 256,
     },
     true,
-    ["encrypt", "decrypt"],
+    ["encrypt", "decrypt"]
   );
-  const exportedKeyBuffer = await crypto.subtle.exportKey("raw", key);
+  const exportedKeyBuffer = await subtle.exportKey("raw", key);
   const exportedKey = new Uint8Array(exportedKeyBuffer);
   const [share1, share2, share3] = await split(exportedKey, 3, 2);
   const reconstructed = await combine([share2, share1]);
 
-  assert.strictEqual(
+  strictEqual(
     Buffer.from(reconstructed).toString("base64"),
     Buffer.from(exportedKey).toString("base64"),
-    "Reconstructed secret does not match the original exported key",
+    "Reconstructed secret does not match the original exported key"
   );
 }
 
-async function main() {
+export async function sss() {
   console.log("\n=======SSS Examples========");
   await splitUserInput();
   await splitRandomEntropy();
   await splitSymmetricKey();
 }
 
-main()
+sss()
   .catch(console.error)
   .finally(() => process.exit());
