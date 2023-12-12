@@ -2,7 +2,7 @@
  * Get auto id
  */
 
-import { getAutoIdFromSeed } from '../lib/did';
+import { getAutoIdFromSeed } from '../library/did';
 
 function main() {
   console.log('\n=======Generate Auto ID from seed phrase========');

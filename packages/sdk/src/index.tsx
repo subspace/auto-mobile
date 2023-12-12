@@ -7,7 +7,7 @@ import { polyfill as polyfillCrypto } from 'react-native-polyfill-globals/src/cr
 polyfillEncoding();
 polyfillCrypto();
 export * from './constants';
-export * from './lib/did';
-export * from './lib/recovery';
-export * from './lib/utils';
-export * from './lib/wallet';
+export * from './library/did';
+export * from './library/recovery';
+export * from './library/utils';
+export * from './library/wallet';

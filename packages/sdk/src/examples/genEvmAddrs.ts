@@ -2,7 +2,7 @@
  * Generate EVM addresses (following BIP-32) from a seed phrase
  */
 
-import { generateEvmAddressesFromSeed } from '../lib/wallet';
+import { generateEvmAddressesFromSeed } from '../library/wallet';
 
 function main() {
   console.log('\n=======Generate EVM addresses from seed phrase========');

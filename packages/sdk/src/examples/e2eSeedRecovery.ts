@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { NUM_OF_SHARES } from '../constants';
-import { generateSssSharesFrom, recoverSeedFrom } from '../lib/recovery';
-import { getRandom10Shares } from '../lib/utils';
+import { generateSssSharesFrom, recoverSeedFrom } from '../library/recovery';
+import { getRandom10Shares } from '../library/utils';
 
 async function main() {
   console.log('\n=======E2E Seed Recovery========');

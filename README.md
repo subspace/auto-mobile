@@ -14,28 +14,28 @@ This project is a monorepo that has built-in the core modules.
 ## Install
 
 ```sh
-yarn
+pnpm install
 ```
 
 ```sh
-yarn dev
+pnpm dev
 ```
 
 ## Build
 
 ```sh
-yarn build
+pnpm build
 ```
 
 ## Lint
 
 ```sh
-yarn lint
+pnpm lint
 ```
 
 
 ## Clean Output files
 
 ```sh
-yarn clean
+pnpm clean
 ```

@@ -10,7 +10,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@auto/sdk": "*",
+    "@auto/sdk": "workspace:*",
     "expo": "49.0.15",
     "expo-status-bar": "1.6.0",
     "expo-crypto-polyfills": "1.1.0",
@@ -21,9 +21,9 @@
     "expo-splash-screen": "~0.20.5"
   },
   "devDependencies": {
-    "@subspace/eslint-config": "*",
-    "@subspace/prettier-config": "*",
-    "@subspace/tsconfig": "*",
+    "@subspace/eslint-config": "workspace:*",
+    "@subspace/prettier-config": "workspace:*",
+    "@subspace/tsconfig": "workspace:*",
     "react-native-logs": "5.0.1",
     "@babel/plugin-transform-class-properties": "7.23.3",
     "@babel/plugin-transform-class-static-block": "7.23.4",

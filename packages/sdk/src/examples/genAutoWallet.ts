@@ -3,7 +3,7 @@
  * multiple addresses on Subspace Network (relay + domains).
  */
 import { cryptoWaitReady } from '@polkadot/util-crypto';
-import { generateAutoWallet } from '../lib/wallet';
+import { generateAutoWallet } from '../library/wallet';
 
 async function main() {
   console.log(

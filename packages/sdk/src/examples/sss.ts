@@ -1,9 +1,9 @@
 // NOTE: As the `shamir-secret-sharing` package is not yet published,
-// `index.d.ts` file needs to be generated during `$ yarn` or `$ yarn install`
+// `index.d.ts` file needs to be generated during `$ pnpm install`
 // in the root folder
 import assert from 'assert';
 import crypto from 'crypto';
-import { toUint8Array } from '../lib/utils';
+import { toUint8Array } from '../library/utils';
 import { combine, split } from '../shamir-secret-sharing';
 
 /// Example of splitting user input
