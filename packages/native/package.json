@@ -144,7 +144,6 @@
   "license": "MIT",
   "dependencies": {
     "@types/react-native-get-random-values": "1.8.2",
-    "@subspace/shamir-secret-sharing": "*",
     "@subspace/core": "*",
     "@ethersproject/shims": "^5.7.0",
     "@polkadot/api": "^10.11.1",
