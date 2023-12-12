@@ -1,5 +1,5 @@
 {
-  "name": "@subspace/native",
+  "name": "@auto/sdk",
   "version": "0.0.1",
   "description": "sdk for auto app with typescript & react-native",
   "main": "lib/commonjs/index",
@@ -144,7 +144,6 @@
   "license": "MIT",
   "dependencies": {
     "@types/react-native-get-random-values": "1.8.2",
-    "@subspace/core": "*",
     "@ethersproject/shims": "^5.7.0",
     "@polkadot/api": "^10.11.1",
     "@polkadot/util-crypto": "^12.6.1",

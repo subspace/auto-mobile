@@ -305,7 +305,6 @@ export async function split(
 
   const degree = threshold - 1;
 
-  console.log('split before for', { degree });
   for (let i = 0; i < secretLength; i++) {
     const byte = secret[i]!;
     const coefficients = newCoefficients(byte, degree);
@@ -316,8 +315,6 @@ export async function split(
       result[j]![i] = y;
     }
   }
-
-  console.log('split after for');
 
   return result;
 }

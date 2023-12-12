@@ -10,7 +10,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@subspace/native": "*",
+    "@auto/sdk": "*",
     "expo": "49.0.15",
     "expo-status-bar": "1.6.0",
     "expo-crypto-polyfills": "1.1.0",

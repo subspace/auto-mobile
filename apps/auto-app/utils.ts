@@ -1,5 +1,5 @@
+import { NUM_OF_SHARES, generateAutoWallet, generateSssSharesFrom, getRandom10Shares, recoverSeedFrom } from "@auto/sdk";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
-import { NUM_OF_SHARES, generateAutoWallet, generateSssSharesFrom, getRandom10Shares, recoverSeedFrom } from "@subspace/native";
 import { logger } from "react-native-logs";
 
 const log = logger.createLogger();
