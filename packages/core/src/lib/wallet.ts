@@ -93,7 +93,7 @@ function generateSubspaceAddress(seedPhrase: string): string {
 /**
  * Represents an AutoWallet object.
  */
-interface AutoWallet {
+export interface AutoWallet {
   subspaceAddress: string;
   evmAddresses: string[];
   autoId: string | bigint;

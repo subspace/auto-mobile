@@ -4,7 +4,7 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom", "dom.iterable", "ES2022"],
     "composite": false,
     "declaration": true,
     "declarationMap": true,
@@ -22,5 +22,5 @@
     "strict": true,
     "strictFunctionTypes": false
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "build", "dist", ".next", ".expo"]
 }

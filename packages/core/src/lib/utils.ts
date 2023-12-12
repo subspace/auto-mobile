@@ -1,5 +1,4 @@
-import assert from "assert";
-import { THRESHOLD } from "./recovery";
+import { THRESHOLD } from "../constants";
 
 /**
  * Convert string to Uint8Array
@@ -58,11 +57,15 @@ export function getRandom10Shares(shares: Uint8Array[]): Uint8Array[] {
     }
   }
 
-  assert.equal(
-    randomShares.length,
-    THRESHOLD,
-    `Random shares length is not ${THRESHOLD}`
-  );
+  if (randomShares.length !== THRESHOLD) {
+    throw new Error(`Random shares length is not ${THRESHOLD}`);
+  }
+
+  // assert.equal(
+  //   randomShares.length,
+  //   THRESHOLD,
+  //   `Random shares length is not ${THRESHOLD}`
+  // );
 
   return randomShares;
 }

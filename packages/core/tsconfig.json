@@ -1,5 +1,14 @@
 {
-  "extends": "@subspace/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
   "include": [
     "src/**/*"
   ],
