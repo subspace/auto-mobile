@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { NUM_OF_SHARES } from '../constants';
+import { NUM_OF_SHARES } from '../library/constants';
 import { generateSssSharesFrom, recoverSeedFrom } from '../library/recovery';
 import { getRandom10Shares } from '../library/utils';
 

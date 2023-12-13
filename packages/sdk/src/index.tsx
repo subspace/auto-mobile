@@ -6,7 +6,7 @@ import { polyfill as polyfillEncoding } from 'react-native-polyfill-globals/src/
 import { polyfill as polyfillCrypto } from 'react-native-polyfill-globals/src/crypto';
 polyfillEncoding();
 polyfillCrypto();
-export * from './constants';
+export * from './library/constants';
 export * from './library/did';
 export * from './library/recovery';
 export * from './library/utils';

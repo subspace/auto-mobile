@@ -1,4 +1,4 @@
-import { THRESHOLD } from '../constants';
+import { THRESHOLD } from './constants';
 
 /**
  * Convert string to Uint8Array
@@ -64,11 +64,14 @@ export function getRandom10Shares(shares: Uint8Array[]): Uint8Array[] {
     throw new Error(`Random shares length is not ${THRESHOLD}`);
   }
 
-  // assert.equal(
-  //   randomShares.length,
-  //   THRESHOLD,
-  //   `Random shares length is not ${THRESHOLD}`
-  // );
-
   return randomShares;
 }
+
+/**
+ * Defers the execution of a task and returns a promise that resolves with the result of the task.
+ * @param task The task to be executed.
+ * @returns A promise that resolves with the result of the task.
+ */
+export const deferTask = <T>(task: () => T) => {
+  return new Promise<T>((resolve) => setTimeout(() => resolve(task())));
+};

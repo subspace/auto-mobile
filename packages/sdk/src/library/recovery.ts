@@ -16,7 +16,7 @@
  * More on this: https://www.notion.so/subspacelabs/Account-Recovery-Technical-c9a23398a96b4c7c999ba1e239479b8d#1c8f8e2ca12345b6b080e591525487eb
  */
 
-import { NUM_OF_SHARES, THRESHOLD } from '../constants';
+import { NUM_OF_SHARES, THRESHOLD } from './constants';
 import { combine, split } from '../shamir-secret-sharing';
 import { Uint8ArrayToAsciiString, toUint8Array } from './utils';
 /**
