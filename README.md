@@ -1,51 +1,61 @@
-# Typescript SDK for Auto
+# Auto
 
 ## Description
 
+This project is a monorepo that has built-in the core modules.
+
 **Modules**:
 
-- <u>Wallet</u>: The wallet module is responsible for generating the user's wallet for Subspace Network (Relay & domains).
-- <u>DID</u>: The DID module is responsible for generating the user's DID for the entire Subspace network during the onboarding process. This also includes the addition of the user's DID to the Subspace Network's DID registry. And one can verify the user's DID by using the Subspace Network's DID registry.
-- <u>Recovery</u>: The recovery module is responsible for recovering the user's wallet for Subspace Network (Relay & domains). Here, the seed phrase is stored & recovered via Shamir's Secret Sharing (SSS) Scheme.
+-   <u>Wallet</u>: The wallet module is responsible for generating the user's wallet for Subspace Network (Relay & domains).
+-   <u>DID</u>: The DID module is responsible for generating the user's DID for the entire Subspace network during the onboarding process. This also includes the addition of the user's DID to the Subspace Network's DID registry. And one can verify the user's DID by using the Subspace Network's DID registry.
+-   <u>Recovery</u>: The recovery module is responsible for recovering the user's wallet for Subspace Network (Relay & domains). Here, the seed phrase is stored & recovered via Shamir's Secret Sharing (SSS) Scheme.
 
 > Details on each is available on Subspace Notion.
 
 ## Install
 
 ```sh
-yarn
+pnpm install
+```
+
+## Dev environment
+
+```sh
+pnpm dev
+```
+
+### Dev ios environment
+
+```sh
+pnpm ios
+```
+
+### Dev android environment
+
+```sh
+pnpm android
 ```
 
 ## Build
 
 ```sh
-yarn build
+pnpm build
 ```
 
 ## Lint
 
 ```sh
-yarn lint
-```
-
-## Examples
-
-```sh
-yarn eg:gen-evm-addrs
-yarn eg:gen-autoid
-yarn eg:gen-auto-wallet
-yarn eg:sss
-yarn eg:e2e-seed-recovery
+pnpm lint
 ```
 
 ## Clean Output files
 
 ```sh
-yarn clean
+pnpm clean
 ```
 
-## Clean All
+## Clean all the output files
 
 ```sh
-yarn clean:all
+pnpm clean:all
 ```
