@@ -17,8 +17,19 @@ This project is a monorepo that has built-in the core modules.
 pnpm install
 ```
 
+## Dev environment
 ```sh
 pnpm dev
+```
+
+### Dev ios environment
+```sh
+pnpm ios
+```
+
+### Dev android environment
+```sh
+pnpm android
 ```
 
 ## Build
@@ -38,4 +49,9 @@ pnpm lint
 
 ```sh
 pnpm clean
+```
+
+## Clean all the output files
+```sh
+pnpm clean:all
 ```
