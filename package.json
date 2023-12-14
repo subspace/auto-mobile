@@ -3,8 +3,8 @@
     "private": true,
     "scripts": {
         "dev:auto-app": "turbo run dev --continue --filter=@subspace/auto-app...",
-        "android": "pnpm -- turbo run dev:android --continue --filter=@subspace/auto-app...",
-        "ios": "pnpm -- turbo run dev:ios --continue --filter=@subspace/auto-app...",    
+        "dev:android": "turbo run dev:android --continue --filter=@subspace/auto-app...",
+        "dev:ios": "turbo run dev:ios --continue --filter=@subspace/auto-app...",    
         "dev": "turbo run dev",
         "build": "turbo run build",
         "clean": "turbo run clean",

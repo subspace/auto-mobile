@@ -1,4 +1,4 @@
-import { NUM_OF_SHARES, generateAutoWallet, generateSssSharesFrom, getRandom10Shares, recoverSeedFrom } from "@auto/sdk";
+import { NUM_OF_SHARES, generateAutoWallet, generateSssSharesFrom, recoverSeedFrom } from "@auto/sdk";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { logger } from "react-native-logs";
 
@@ -32,10 +32,8 @@ export async function e2eSeedRecovery() {
     throw new Error(`Expected ${NUM_OF_SHARES} shares but got ${shares.length}`);
   }
   
-  // select any random 10 shares
-  const randomShares: Uint8Array[] = getRandom10Shares(shares);
   // recover seed phrase from random shares
-  const recoveredSeedPhrase = await recoverSeedFrom(randomShares);
+  const recoveredSeedPhrase = await recoverSeedFrom();
   if (recoveredSeedPhrase !== seedPhrase) {
     throw new Error(
       "Recovered seed phrase does not match the original seed phrase"

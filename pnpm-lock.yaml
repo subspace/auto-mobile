@@ -60,6 +60,9 @@ importers:
       expo-crypto-polyfills:
         specifier: 1.1.0
         version: 1.1.0(expo@49.0.15)(react-native@0.72.6)
+      expo-secure-store:
+        specifier: ~12.3.1
+        version: 12.3.1(expo@49.0.15)
       expo-splash-screen:
         specifier: ~0.20.5
         version: 0.20.5(expo-modules-autolinking@1.5.1)(expo@49.0.15)
@@ -198,6 +201,9 @@ importers:
       '@polkadot/util-crypto':
         specifier: ^12.6.1
         version: 12.6.1(@polkadot/util@12.6.1)
+      '@react-native-async-storage/async-storage':
+        specifier: '*'
+        version: 1.21.0(react-native@0.72.6)
       '@semaphore-protocol/identity':
         specifier: ^3.15.1
         version: 3.15.1
@@ -207,6 +213,9 @@ importers:
       ethers:
         specifier: 6.9.0
         version: 6.9.0
+      expo-secure-store:
+        specifier: 12.5.0
+        version: 12.5.0(expo@49.0.15)
       react-native-get-random-values:
         specifier: 1.10.0
         version: 1.10.0(react-native@0.72.6)
@@ -3476,6 +3485,15 @@ packages:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+    dev: false
+
+  /@react-native-async-storage/async-storage@1.21.0(react-native@0.72.6):
+    resolution: {integrity: sha512-JL0w36KuFHFCvnbOXRekqVAUplmOyT/OuCQkogo6X98MtpSaJOKEAeZnYO8JB0U/RIEixZaGI5px73YbRm/oag==}
+    peerDependencies:
+      react-native: ^0.0.0-0 || >=0.60 <1.0
+    dependencies:
+      merge-options: 3.0.4
+      react-native: 0.72.6(@babel/core@7.23.5)(@babel/preset-env@7.23.5)(react@18.2.0)
     dev: false
 
   /@react-native-community/cli-clean@11.3.7:
@@ -7228,6 +7246,22 @@ packages:
       invariant: 2.2.4
     dev: false
 
+  /expo-secure-store@12.3.1(expo@49.0.15):
+    resolution: {integrity: sha512-XLIgWDiIuiR0c+AA4NCWWibAMHCZUyRcy+lQBU49U6rvG+xmd3YrBJfQjfqAPyLroEqnLPGTWUX57GyRsfDOQw==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 49.0.15(@babel/core@7.23.5)
+    dev: false
+
+  /expo-secure-store@12.5.0(expo@49.0.15):
+    resolution: {integrity: sha512-Ow2ei+SB1w4zPLxmOg2PVPf2i45Eii0T9KUaER5iRLJAMcBWN4nyGCxzESOoN3OrvxVadP0hAn6RVE1G3gdD+Q==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 49.0.15(@babel/core@7.23.5)
+    dev: false
+
   /expo-splash-screen@0.20.5(expo-modules-autolinking@1.5.1)(expo@49.0.15):
     resolution: {integrity: sha512-nTALYdjHpeEA30rdOWSguxn72ctv8WM8ptuUgpfRgsWyn4i6rwYds/rBXisX69XO5fg+XjHAQqijGx/b28+3tg==}
     peerDependencies:
@@ -8484,6 +8518,11 @@ packages:
     resolution: {integrity: sha512-yvkRyxmFKEOQ4pNXCmJG5AEQNlXJS5LaONXo5/cLdTZdWvsZ1ioJEonLGAosKlMWE8lwUy/bJzMjcw8az73+Fg==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /is-plain-obj@2.1.0:
+    resolution: {integrity: sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==}
+    engines: {node: '>=8'}
+    dev: false
 
   /is-plain-object@2.0.4:
     resolution: {integrity: sha512-h5PpgXkWitc38BBMYawTYMWJHFZJVnBquFE57xFpjB8pJFiF6gZ+bU+WyI/yqXiFR5mdLsgYNaPe8uao6Uv9Og==}
@@ -10191,6 +10230,13 @@ packages:
       type-fest: 0.18.1
       yargs-parser: 20.2.9
     dev: true
+
+  /merge-options@3.0.4:
+    resolution: {integrity: sha512-2Sug1+knBjkaMsMgf1ctR1Ujx+Ayku4EdJN4Z+C2+JzoeF7A3OZ9KM2GY0CpQS51NR61LTurMJrRKPhSs3ZRTQ==}
+    engines: {node: '>=10'}
+    dependencies:
+      is-plain-obj: 2.1.0
+    dev: false
 
   /merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
