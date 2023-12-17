@@ -1,4 +1,5 @@
-import { THRESHOLD } from './constants';
+import * as SecureStorage from 'expo-secure-store';
+import { SECRET_SHARES, SHARES_SIZE, THRESHOLD } from './constants';
 
 /**
  * Convert string to Uint8Array
@@ -74,4 +75,62 @@ export function getRandom10Shares(shares: Uint8Array[]): Uint8Array[] {
  */
 export const deferTask = <T>(task: () => T) => {
   return new Promise<T>((resolve) => setTimeout(() => resolve(task())));
+};
+
+/**
+ * Stores securely encrypted data in the device storage.
+ * @param key - The unique identifier for the stored data.
+ * @param value - The data to be stored securely. It will be serialized to JSON.
+ */
+export const storeSecureData = async <T>(key: string, value: T) => {
+  const jsonValue = JSON.stringify(value);
+  await SecureStorage.setItemAsync(key, jsonValue);
+};
+
+/**
+ * Retrieves securely stored data from the device storage.
+ * @param key - The unique identifier for the data to retrieve.
+ * @returns The retrieved data of the specified type, or undefined if not found.
+ */
+export const getSecureData = async <T>(key: string) => {
+  try {
+    const value = await SecureStorage.getItemAsync(key);
+    if (value !== null) {
+      return JSON.parse(value) as T;
+    }
+    return undefined;
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
+ * Stores an array of secure shares in the device storage.
+ * @param shares - An array of Uint8Array shares to be stored securely.
+ */
+export const storeSecureShares = (shares: Uint8Array[]) => {
+  const promises = shares.map((share, index) => {
+    const strShares = JSON.stringify([...share]);
+    return storeSecureData(`${SECRET_SHARES}_${index}`, strShares);
+  });
+  return Promise.all(promises);
+};
+
+/**
+ * Retrieves securely stored shares from device storage.
+ * @returns An array of Uint8Array shares retrieved from storage.
+ * @throws Error if any share is not found.
+ */
+export const getSecureStoredShares = async () => {
+  const sharesIndex = new Array(SHARES_SIZE).fill(null);
+  const promises = sharesIndex.map(async (_, index) => {
+    const value = await SecureStorage.getItemAsync(`${SECRET_SHARES}_${index}`);
+    if (value !== null) {
+      const strShare = JSON.parse(value) as string;
+      return new Uint8Array(JSON.parse(strShare));
+    }
+    throw new Error('Secret shares could not be found!');
+  });
+  const resolvedResult = await Promise.all(promises);
+  return resolvedResult.filter((result) => !!result).flat();
 };

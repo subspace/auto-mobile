@@ -16,9 +16,14 @@
  * More on this: https://www.notion.so/subspacelabs/Account-Recovery-Technical-c9a23398a96b4c7c999ba1e239479b8d#1c8f8e2ca12345b6b080e591525487eb
  */
 
-import { NUM_OF_SHARES, THRESHOLD } from './constants';
 import { combine, split } from '../shamir-secret-sharing';
-import { Uint8ArrayToAsciiString, toUint8Array } from './utils';
+import { NUM_OF_SHARES, THRESHOLD } from './constants';
+import {
+  Uint8ArrayToAsciiString,
+  getSecureStoredShares,
+  storeSecureShares,
+  toUint8Array,
+} from './utils';
 /**
  * Generate SSS shares from a seed phrase
  *
@@ -38,6 +43,7 @@ export async function generateSssSharesFrom(
 
   // TODO: write/distribute shares to trusted/non-trusted setup
   // Here, we need to maintain a DB that stores the nodes for each user.
+  await storeSecureShares(shares);
 
   return shares;
 }
@@ -48,11 +54,12 @@ export async function generateSssSharesFrom(
  * @param shares The SSS shares at least {THRESHOLD} shares
  * @returns The reconstructed seed phrase as ASCII string
  */
-export async function recoverSeedFrom(shares: Uint8Array[]): Promise<string> {
+export async function recoverSeedFrom(): Promise<string> {
+  const shares = await getSecureStoredShares();
+
   if (shares.length < THRESHOLD) {
     throw new Error(`At least ${THRESHOLD} shares are required for recovery`);
   }
-  // TODO: read/retrieve/fetch shares (string) from trusted/non-trusted setup
 
   // reconstruct the secret
   const reconstructedSeedPhrase = await combine(shares);

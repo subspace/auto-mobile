@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Button, StyleSheet, Text, View } from "react-native";
 import { e2eSeedRecovery, genAutoWallet } from './utils';
 
 import { logger } from "react-native-logs";
@@ -10,7 +10,7 @@ export default function App() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [autoId, setAutoId] = React.useState<string | bigint>();
   const [recovery, setRecovery] = React.useState<string>();
-  React.useEffect(() => {
+  const handler = () => {
     async function getAuthWallet() {
       try {
         setIsLoading(true);
@@ -25,10 +25,11 @@ export default function App() {
       }
     }
     void getAuthWallet();
-  }, []);
+  };
 
   return (
     <View style={styles.container}>
+      <Button onPress={handler} title="Generate Recovery" />
       {isLoading ? (
         <ActivityIndicator size="small" />
       ) : (

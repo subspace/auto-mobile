@@ -1,7 +1,6 @@
 import assert from 'assert';
 import { NUM_OF_SHARES } from '../library/constants';
 import { generateSssSharesFrom, recoverSeedFrom } from '../library/recovery';
-import { getRandom10Shares } from '../library/utils';
 
 async function main() {
   console.log('\n=======E2E Seed Recovery========');
@@ -10,11 +9,8 @@ async function main() {
   const shares = await generateSssSharesFrom(seedPhrase);
   assert.equal(shares.length, NUM_OF_SHARES);
 
-  // select any random 10 shares
-  const randomShares: Uint8Array[] = getRandom10Shares(shares);
-
   // recover seed phrase from random shares
-  const recoveredSeedPhrase = await recoverSeedFrom(randomShares);
+  const recoveredSeedPhrase = await recoverSeedFrom();
 
   assert.strictEqual(
     recoveredSeedPhrase,
