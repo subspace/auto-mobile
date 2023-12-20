@@ -12,9 +12,19 @@
 
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { Mnemonic, ethers } from 'ethers';
-import { deferTask } from './utils';
+import { JsonRpcProvider, Mnemonic, ethers, Wallet, Contract } from 'ethers';
+import { deferTask, checkBalance } from './utils';
 import { getAutoIdFromSeed, getIdentityFromSeed } from './did';
+import { generateSssSharesFrom } from './recovery';
+import {
+  SIGNER_PRIVATE_KEY,
+  NOVA_RPC_URL,
+  DID_REGISTRY_ADDRESS,
+} from './constants';
+
+// Import the DidRegistry ABI from the JSON file
+import DidRegistryJson from '../../abi/DidRegistry.json';
+const abi = DidRegistryJson.abi;
 
 /**
  * TODO: Check for Auto ID if added on-chain to one of the EVM domains
@@ -25,10 +35,12 @@ import { getAutoIdFromSeed, getIdentityFromSeed } from './did';
  * @returns True if the Auto ID exists on-chain, false otherwise
  */
 async function checkIfAutoIdExistsOnChain(
-  api: string,
+  provider: JsonRpcProvider,
   seedPhrase: string
 ): Promise<boolean> {
   // TODO: connect to the main EVM domain (where DID registry is deployed)
+  // apply `is-user-verified` script here after there is 100% certainty that
+  // it would not throw any timeout error due to collecting event logs from the chain
 
   // get the identity from seed phrase
   const identity = getIdentityFromSeed(seedPhrase);
@@ -42,7 +54,7 @@ async function checkIfAutoIdExistsOnChain(
 
   // call the DID registry contract to check if the identity exists
 
-  console.log({ api, commitment, nullifier });
+  // console.log({ api, commitment, nullifier });
   // doesn't exist by default
   return false;
 }
@@ -107,42 +119,65 @@ export interface AutoWallet {
  * @returns The AutoWallet object
  */
 export async function generateAutoWallet(
-  mainEvmDomainRpcApiUrl: string,
   numOfEvmChains: number
 ): Promise<AutoWallet> {
-  let seedPhrase = '';
+  try {
+    let seedPhrase = '';
 
-  // Loop until a valid Auto ID is generated
-  while (true) {
-    // Generate a new random seed phrase
-    seedPhrase = await deferTask(() => mnemonicGenerate());
+    // client
+    const provider = new ethers.JsonRpcProvider(NOVA_RPC_URL);
 
-    // TODO: Check for a valid Auto ID
-    const isAutoIdPreExist = await checkIfAutoIdExistsOnChain(
-      mainEvmDomainRpcApiUrl,
-      seedPhrase
+    // Loop until a valid Auto ID is generated
+    while (true) {
+      // Generate a new random seed phrase
+      seedPhrase = await deferTask(() => mnemonicGenerate());
+
+      // TODO: Check for a valid Auto ID
+      const isAutoIdPreExist = await checkIfAutoIdExistsOnChain(
+        provider,
+        seedPhrase
+      );
+
+      if (!isAutoIdPreExist) {
+        // break the loop if the Auto ID doesn't pre-exist onchain
+        break;
+      }
+    }
+
+    // store the seed phrase
+    await generateSssSharesFrom(seedPhrase);
+
+    // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
+    const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
+
+    // TODO: add the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
+    const signer: Wallet = new Wallet(`0x${SIGNER_PRIVATE_KEY}`, provider);
+    await checkBalance(signer);
+
+    // instantiate the DID Registry contract instance via the address & provider
+    // contract instance
+    const didRegistryContract: Contract = new ethers.Contract(
+      DID_REGISTRY_ADDRESS,
+      abi,
+      provider
     );
 
-    if (!isAutoIdPreExist) {
-      // break the loop if the Auto ID doesn't pre-exist onchain
-      break;
-    }
+    // send the transaction to add the user to the group
+    const tx = await didRegistryContract.connect(signer).addToGroup(autoId);
+    console.log(`Transaction hash for adding a new user to group: ${tx.hash}`);
+
+    // Get the Subspace address from seed phrase
+    const subspaceAddress = await deferTask(() =>
+      generateSubspaceAddress(seedPhrase)
+    );
+
+    // Get the EVM addresses from the seed phrase (BIP-32)
+    const evmAddresses = await deferTask(() =>
+      generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
+    );
+
+    return { subspaceAddress, evmAddresses, autoId };
+  } catch (error) {
+    throw new Error(`Error thrown during Auto account generation: ${error}`);
   }
-
-  // TODO: store the seed phrase to IPFS peers via SSS scheme (store in a secure place)
-
-  // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
-  const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
-
-  // Get the Subspace address from seed phrase
-  const subspaceAddress = await deferTask(() =>
-    generateSubspaceAddress(seedPhrase)
-  );
-
-  // Get the EVM addresses from the seed phrase (BIP-32)
-  const evmAddresses = await deferTask(() =>
-    generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
-  );
-
-  return { subspaceAddress, evmAddresses, autoId };
 }

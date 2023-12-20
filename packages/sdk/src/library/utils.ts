@@ -1,5 +1,7 @@
 import * as SecureStorage from 'expo-secure-store';
-import { SECRET_SHARES, SHARES_SIZE, THRESHOLD } from './constants';
+import { SECRET_SHARES, NUM_OF_SHARES, THRESHOLD } from './constants';
+import { ethers, Wallet } from 'ethers';
+import { MIN_BALANCE_SIGNER } from './constants';
 
 /**
  * Convert string to Uint8Array
@@ -122,7 +124,7 @@ export const storeSecureShares = (shares: Uint8Array[]) => {
  * @throws Error if any share is not found.
  */
 export const getSecureStoredShares = async () => {
-  const sharesIndex = new Array(SHARES_SIZE).fill(null);
+  const sharesIndex = new Array(NUM_OF_SHARES).fill(null);
   const promises = sharesIndex.map(async (_, index) => {
     const value = await SecureStorage.getItemAsync(`${SECRET_SHARES}_${index}`);
     if (value !== null) {
@@ -134,3 +136,14 @@ export const getSecureStoredShares = async () => {
   const resolvedResult = await Promise.all(promises);
   return resolvedResult.filter((result) => !!result).flat();
 };
+
+export async function checkBalance(signer: Wallet) {
+  // check if sufficient balance is available
+  signer.provider?.getBalance(signer.address).then((balance) => {
+    if (balance < ethers.parseEther(MIN_BALANCE_SIGNER)) {
+      throw new Error(
+        `The address ${signer.address} does not have sufficient balance to send transactions`
+      );
+    }
+  });
+}
