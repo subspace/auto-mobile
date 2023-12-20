@@ -46,7 +46,7 @@ importers:
         specifier: 5.3.3
         version: 5.3.3
 
-  apps/auto-app:
+  apps/auto-app-example:
     dependencies:
       '@auto/sdk':
         specifier: workspace:*
@@ -13482,7 +13482,7 @@ packages:
       is-yarn-global: 0.3.0
       latest-version: 5.1.0
       pupa: 2.1.1
-      semver: 7.3.7
+      semver: 7.5.4
       semver-diff: 3.1.1
       xdg-basedir: 4.0.0
     dev: true
