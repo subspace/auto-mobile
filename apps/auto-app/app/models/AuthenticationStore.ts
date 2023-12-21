@@ -5,7 +5,7 @@ export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
   .props({
     authToken: types.maybe(types.string),
-    fullname: "",
+    fullname: types.maybe(types.string),
     subspaceAddress: types.maybe(types.string),
     evmAddresses: types.array(types.string),
     autoId: types.maybe(types.string),
@@ -16,8 +16,8 @@ export const AuthenticationStoreModel = types
       return !!store.autoId
     },
     get validationError() {
-      if (store.fullname.length === 0) return "can't be blank"
-      if (store.fullname.length < 6) return "must be at least 6 characters"
+      if (store.fullname?.length === 0) return "can't be blank"
+      if (store.fullname && store.fullname?.length < 6) return "must be at least 6 characters"
       return ""
     },
   }))
@@ -43,7 +43,7 @@ export const AuthenticationStoreModel = types
     },
     logout() {
       store.autoId = undefined
-      store.fullname = ""
+      store.fullname = undefined
     },
   }))
 

@@ -1,4 +1,5 @@
-import { Feather } from "@expo/vector-icons"
+import { clearAlltheShares } from "@auto/sdk"
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
 import React from "react"
 import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 import { useStores } from "../../models"
@@ -10,12 +11,16 @@ export const WalletHeader = () => {
     authenticationStore: { logout },
   } = useStores()
 
+  const onReset = () => {
+    clearAlltheShares().then(logout)
+  }
   return (
     <View style={$headerWrapperContainer}>
       <View style={$headerContainer}>
         <Icon icon="subspace" style={$iconStyle} />
       </View>
       <Feather style={$signoutStyle} name="log-out" size={28} onPress={logout} />
+      <MaterialCommunityIcons style={$resetStyle} name="lock-reset" size={28} onPress={onReset} />
     </View>
   )
 }
@@ -37,5 +42,12 @@ const $signoutStyle: TextStyle = {
   color: colors.palette.primary500,
   position: "absolute",
   right: spacing.sm,
+  top: 10,
+}
+
+const $resetStyle: TextStyle = {
+  color: colors.palette.primary500,
+  position: "absolute",
+  left: spacing.sm,
   top: 10,
 }
