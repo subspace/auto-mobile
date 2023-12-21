@@ -1,5 +1,5 @@
-import 'react-native-get-random-values';
+import * as Crypto from 'expo-crypto';
+
 export function getRandomBytes(numBytes: number): Uint8Array {
-  // @ts-expect-error
-  return crypto.getRandomValues(new Uint8Array(numBytes));
+  return Crypto.getRandomValues(new Uint8Array(numBytes));
 }

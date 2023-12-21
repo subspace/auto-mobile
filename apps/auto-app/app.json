@@ -1,0 +1,61 @@
+{
+  "name": "SubspaceAutoApp",
+  "displayName": "SubspaceAutoApp",
+  "expo": {
+    "name": "SubspaceAutoApp",
+    "slug": "SubspaceAutoApp",
+    "scheme": "subspaceautoapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/subspace-icon.png",
+    "splash": {
+      "image": "./assets/images/subspace-splash.png",
+      "resizeMode": "contain"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "jsEngine": "hermes",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "icon": "./assets/images/subspace-icon.png",
+      "package": "com.subspaceautoapp"
+    },
+    "ios": {
+      "icon": "./assets/images/subspace-icon.png",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.subspaceautoapp"
+    },
+    "web": {
+      "favicon": "./assets/images/app-icon-web-favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-localization",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": false
+          },
+          "android": {
+            "newArchEnabled": false
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "tsconfigPaths": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "023c6ca1-d1d4-49bc-8a71-ed04f054504a"
+      }
+    }
+  },
+  "ignite": {
+    "version": "9.2.0"
+  }
+}

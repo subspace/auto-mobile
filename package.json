@@ -5,6 +5,8 @@
         "dev:auto-app-example": "turbo run dev --continue --filter=@subspace/auto-app-example...",
         "dev:android:example": "turbo run dev:android --continue --filter=@subspace/auto-app-example...",
         "dev:ios:example": "turbo run dev:ios --continue --filter=@subspace/auto-app-example...",    
+        "dev:auto-app:ios": "turbo run dev:ios --continue --filter=@subspace/auto-app...",
+        "dev:auto-app:android": "turbo run dev:android --continue --filter=@subspace/auto-app...",
         "dev": "turbo run dev",
         "build": "turbo run build",
         "clean": "turbo run clean",

@@ -147,6 +147,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "expo-crypto": "12.6.0",
     "@types/react-native-get-random-values": "1.8.2",
     "@ethersproject/shims": "^5.7.0",
     "@polkadot/api": "^10.11.1",

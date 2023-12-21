@@ -13,8 +13,9 @@
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 import { Mnemonic, ethers } from 'ethers';
-import { deferTask } from './utils';
 import { getAutoIdFromSeed, getIdentityFromSeed } from './did';
+import { generateSssSharesFrom } from './recovery';
+import { deferTask } from './utils';
 
 /**
  * TODO: Check for Auto ID if added on-chain to one of the EVM domains
@@ -31,7 +32,7 @@ async function checkIfAutoIdExistsOnChain(
   // TODO: connect to the main EVM domain (where DID registry is deployed)
 
   // get the identity from seed phrase
-  const identity = getIdentityFromSeed(seedPhrase);
+  const identity = await deferTask(() => getIdentityFromSeed(seedPhrase));
 
   // get the commitment
   const commitment = identity.commitment;
@@ -59,8 +60,13 @@ export function generateEvmAddressesFromSeed(
   numOfAddresses: number
 ): string[] {
   const addresses: string[] = [];
+  console.log('mnemonic before');
   const mnemonic = Mnemonic.fromPhrase(seedPhrase); // Convert the seed phrase to mnemonic
+  console.log('mnemonic after', mnemonic);
+  console.log('masterNode before', mnemonic);
+
   const masterNode = ethers.HDNodeWallet.fromMnemonic(mnemonic); // Create a master node from the seed phrase
+  console.log('masterNode after', masterNode);
 
   for (let i = 0; i < numOfAddresses; i++) {
     const path = `m/44'/60'/0'/0/${i}`; // Standard Ethereum derivation path according to BIP-44
@@ -129,20 +135,22 @@ export async function generateAutoWallet(
     }
   }
 
-  // TODO: store the seed phrase to IPFS peers via SSS scheme (store in a secure place)
+  // store the seed phrase to IPFS peers via SSS scheme (store in a secure place)
+  await generateSssSharesFrom(seedPhrase);
 
   // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
   const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
-
+  console.log('autoId', autoId);
   // Get the Subspace address from seed phrase
   const subspaceAddress = await deferTask(() =>
     generateSubspaceAddress(seedPhrase)
   );
-
+  console.log('subspaceAddress', subspaceAddress);
   // Get the EVM addresses from the seed phrase (BIP-32)
   const evmAddresses = await deferTask(() =>
     generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
   );
+  console.log('evmAddresses', evmAddresses);
 
   return { subspaceAddress, evmAddresses, autoId };
 }

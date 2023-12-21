@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ActivityIndicator, Button, StyleSheet, Text, View } from "react-native";
-import { e2eSeedRecovery, genAutoWallet } from './utils';
+import { genAutoWallet } from './utils';
 
 import { logger } from "react-native-logs";
 
@@ -10,14 +10,16 @@ export default function App() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [autoId, setAutoId] = React.useState<string | bigint>();
   const [recovery, setRecovery] = React.useState<string>();
+  const [evm, setEvm] = React.useState<string[]>([])
   const handler = () => {
     async function getAuthWallet() {
       try {
         setIsLoading(true);
         const autoWallet = await genAutoWallet();
-        const recoveredSeedPhrase = await e2eSeedRecovery();
+        // const recoveredSeedPhrase = await e2eSeedRecovery();
         setAutoId(autoWallet.autoId);
-        setRecovery(recoveredSeedPhrase);
+        setEvm(autoWallet.evmAddresses);
+        // setRecovery(recoveredSeedPhrase);
       } catch (e) {
         log.error("error gen auto wallet", e);
       } finally {
@@ -35,6 +37,7 @@ export default function App() {
       ) : (
         <>
         <Text>Auto Id: {autoId?.toString()}</Text>
+        <Text>EVM: {evm.toString()}</Text>
         <Text>Recovered Seed phrase: {recovery}</Text></>
       )}
     </View>
