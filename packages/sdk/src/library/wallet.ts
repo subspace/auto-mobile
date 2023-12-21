@@ -14,7 +14,7 @@ import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 import { Mnemonic, ethers } from 'ethers';
 import { getAutoIdFromSeed, getIdentityFromSeed } from './did';
-import { generateSssSharesFrom } from './recovery';
+import { generateSssSharesFrom, recoverSeedFrom } from './recovery';
 import { deferTask } from './utils';
 
 /**
@@ -60,13 +60,10 @@ export function generateEvmAddressesFromSeed(
   numOfAddresses: number
 ): string[] {
   const addresses: string[] = [];
-  console.log('mnemonic before');
+
   const mnemonic = Mnemonic.fromPhrase(seedPhrase); // Convert the seed phrase to mnemonic
-  console.log('mnemonic after', mnemonic);
-  console.log('masterNode before', mnemonic);
 
   const masterNode = ethers.HDNodeWallet.fromMnemonic(mnemonic); // Create a master node from the seed phrase
-  console.log('masterNode after', masterNode);
 
   for (let i = 0; i < numOfAddresses; i++) {
     const path = `m/44'/60'/0'/0/${i}`; // Standard Ethereum derivation path according to BIP-44
@@ -103,20 +100,12 @@ export interface AutoWallet {
   autoId: string | bigint;
 }
 
-/**
- * Generate a new wallet with a random seed
- * returning the SS58 address and the EVM addresses
- * NOTE: for simplicity, considered only EVM based domains
- *
- * @param mainEvmDomainRpcApiUrl The RPC API URL of the main EVM domain
- * @param numOfEvmChains The number of EVM chains to generate addresses for
- * @returns The AutoWallet object
- */
-export async function generateAutoWallet(
-  mainEvmDomainRpcApiUrl: string,
-  numOfEvmChains: number
-): Promise<AutoWallet> {
-  let seedPhrase = '';
+const findOrGenerateSeedPhrase = async (mainEvmDomainRpcApiUrl: string) => {
+  let seedPhrase = await recoverSeedFrom();
+
+  if (seedPhrase) {
+    return seedPhrase;
+  }
 
   // Loop until a valid Auto ID is generated
   while (true) {
@@ -134,23 +123,38 @@ export async function generateAutoWallet(
       break;
     }
   }
-
   // store the seed phrase to IPFS peers via SSS scheme (store in a secure place)
   await generateSssSharesFrom(seedPhrase);
 
+  return seedPhrase;
+};
+/**
+ * Generate a new wallet with a random seed
+ * returning the SS58 address and the EVM addresses
+ * NOTE: for simplicity, considered only EVM based domains
+ *
+ * @param mainEvmDomainRpcApiUrl The RPC API URL of the main EVM domain
+ * @param numOfEvmChains The number of EVM chains to generate addresses for
+ * @returns The AutoWallet object
+ */
+export async function generateAutoWallet(
+  mainEvmDomainRpcApiUrl: string,
+  numOfEvmChains: number
+): Promise<AutoWallet> {
+  const seedPhrase = await findOrGenerateSeedPhrase(mainEvmDomainRpcApiUrl);
+
   // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
   const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
-  console.log('autoId', autoId);
+
   // Get the Subspace address from seed phrase
   const subspaceAddress = await deferTask(() =>
     generateSubspaceAddress(seedPhrase)
   );
-  console.log('subspaceAddress', subspaceAddress);
+
   // Get the EVM addresses from the seed phrase (BIP-32)
   const evmAddresses = await deferTask(() =>
     generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
   );
-  console.log('evmAddresses', evmAddresses);
 
   return { subspaceAddress, evmAddresses, autoId };
 }

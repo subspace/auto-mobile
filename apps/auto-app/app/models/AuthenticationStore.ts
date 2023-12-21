@@ -1,4 +1,5 @@
 import { IMSTArray, ISimpleType, Instance, SnapshotOut, types } from "mobx-state-tree"
+import { withSetPropAction } from "./helpers/withSetPropAction"
 
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
@@ -9,6 +10,7 @@ export const AuthenticationStoreModel = types
     evmAddresses: types.array(types.string),
     autoId: types.maybe(types.string),
   })
+  .actions(withSetPropAction)
   .views((store) => ({
     get isAuthenticated() {
       return !!store.autoId

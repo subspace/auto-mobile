@@ -14,6 +14,7 @@ import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 
 import { AntDesign, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { WalletHeader } from "../components/Wallet/WalletHeader"
+import { ProfileScreen } from "../screens/Wallet/ProfileScreen"
 
 const $iconLine: ViewStyle = {
   width: 24,
@@ -60,7 +61,7 @@ export function getTabBarIcon(routeName: string, focused: boolean) {
           {focused ? <View style={$iconLine} /> : null}
         </View>
       )
-    case "WalletContacts":
+    case "WalletProfile":
       return (
         <View style={$iconContainer}>
           <AntDesign name="user" size={iconSize} color={colors.palette.primary500} />
@@ -144,7 +145,7 @@ export type WalletTabParamList = {
   WalletHome: undefined
   WalletFaceId: undefined
   WalletWelcome: undefined
-  WalletContacts: undefined
+  WalletProfile: undefined
 }
 
 /**
@@ -208,20 +209,7 @@ export function WalletNavigator() {
 
       <Tab.Screen name="WalletWelcome" component={WelcomeScreen} />
 
-      <Tab.Screen
-        name="WalletContacts"
-        component={function Contacts() {
-          return (
-            <Screen safeAreaEdges={["top"]} header={<WalletHeader />}>
-              <View style={$container}>
-                <Text style={$section} preset="heading">
-                  Profile
-                </Text>
-              </View>
-            </Screen>
-          )
-        }}
-      />
+      <Tab.Screen name="WalletProfile" component={ProfileScreen} />
     </Tab.Navigator>
   )
 }

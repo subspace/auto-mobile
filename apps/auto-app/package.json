@@ -4,7 +4,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "clean": "rm -rf node_modules && rm -rf .expo && rm -rf .turbo",
+    "clean": "rm -rf node_modules && rm -rf .expo && rm -rf .turbo && rm -rf ios android",
     "compile": "tsc --noEmit -p . --pretty",
     "format": "prettier --write \"app/**/*.{js,jsx,json,md,ts,tsx}\"",
     "lint": "eslint App.tsx app test --fix --ext .js,.ts,.tsx && npm run format",

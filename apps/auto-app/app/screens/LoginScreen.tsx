@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite"
-import React, { FC, useRef, useState } from "react"
+import React, { FC, useRef } from "react"
 import { TextInput, TextStyle, View, ViewStyle } from "react-native"
 import { Button, Screen, Text, TextField } from "../components"
 import { useStores } from "../models"
@@ -8,21 +8,17 @@ import { colors, spacing } from "../theme"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
-export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
+export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(props) {
   const authPasswordInput = useRef<TextInput>(null)
-
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [attemptsCount, setAttemptsCount] = useState(0)
   const {
     authenticationStore: { fullname, setFullname, validationError },
   } = useStores()
 
-  const error = isSubmitted ? validationError : ""
-
   function login() {
-    setIsSubmitted(true)
-    setAttemptsCount(attemptsCount + 1)
-    _props.navigation.navigate("SetupAutoId")
+    if (validationError) {
+      return
+    }
+    props.navigation.navigate("SetupAutoId")
 
     // Make a request to your server to get an authentication token.
     // If successful, reset the fields and set the token.
@@ -54,8 +50,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
           autoCapitalize="none"
           autoCorrect={false}
           placeholder="John Doe"
-          helper={error}
-          status={error ? "error" : undefined}
+          helper={validationError}
+          status={validationError ? "error" : undefined}
           onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
 

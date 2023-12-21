@@ -1,17 +1,38 @@
-import { AntDesign, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { observer } from "mobx-react-lite"
-import React, { FC } from "react"
-import { TextStyle, View, ViewStyle } from "react-native"
+import React, { FC, useState } from "react"
+import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { Button, Screen, Text } from "../components"
 import { WalletHeader } from "../components/Wallet/WalletHeader"
 import { useStores } from "../models"
 import { colors, spacing } from "../theme"
 
+const currencies = [
+  {
+    cryptoCurrency: "BTC",
+    cryptoAmount: 1,
+    dollarAmount: "40,000",
+  },
+  {
+    cryptoCurrency: "BNB",
+    cryptoAmount: 3,
+    dollarAmount: "600",
+  },
+  {
+    cryptoCurrency: "ETH",
+    cryptoAmount: 10,
+    dollarAmount: "20,000",
+  },
+]
 export const WelcomeScreen: FC = observer(function WelcomeScreen(_props) {
   const {
     authenticationStore: { fullname },
   } = useStores()
 
+  const [currencyIndex, setCurrentIndex] = useState(0)
+
+  const onCurrencySelect = (idx: number) => () => {
+    setCurrentIndex(idx)
+  }
   return (
     <Screen header={<WalletHeader />} preset="auto" safeAreaEdges={["top", "bottom"]}>
       <View style={$container}>
@@ -23,17 +44,43 @@ export const WelcomeScreen: FC = observer(function WelcomeScreen(_props) {
           <Text preset="subheading">Your Balance:</Text>
           <View style={$balanceRow}>
             <Text preset="subheading">$ </Text>
-            <Text preset="heading" style={$balanceAmoutStyle}>
-              160,000
+            <Text preset="heading" style={$balanceAmountStyle}>
+              {currencies[currencyIndex].dollarAmount}
             </Text>
           </View>
           <View style={$balanceDivider} />
         </View>
-        <View style={$emptyWalletSection}>
-          <View style={$emptyWallet}>
-            <Text style={$emptyWalletText}>Your wallet is empty. Add your crypto here</Text>
+        {currencies.length ? (
+          <View style={$currenciesContainer}>
+            <Text preset="subheading" size="lg" style={$currencyTitle}>
+              Ethereum Chain
+            </Text>
+            <View style={$currenciesWrapper}>
+              <TouchableOpacity style={$currencyContainer} onPress={onCurrencySelect(0)}>
+                <Text preset="bold" style={$currentText}>
+                  3 BNB - $600
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={$currencyContainer} onPress={onCurrencySelect(1)}>
+                <Text preset="bold" style={$currentText}>
+                  3 BTC - $40,000
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={$currencyContainer} onPress={onCurrencySelect(2)}>
+                <Text preset="bold" style={$currentText}>
+                  10 ETH - $20,000
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        ) : (
+          <View style={$emptyWalletSection}>
+            <View style={$emptyWallet}>
+              <Text style={$emptyWalletText}>Your wallet is empty. Add your crypto here</Text>
+            </View>
+          </View>
+        )}
+
         <View style={$makeTransactionWrapper}>
           <Button style={$makeTransactionButton} preset="reversed" text="Make a Transaction" />
         </View>
@@ -42,36 +89,6 @@ export const WelcomeScreen: FC = observer(function WelcomeScreen(_props) {
     </Screen>
   )
 })
-
-export function renderIcons() {
-  const iconStyles: ViewStyle = {
-    width: 48,
-    height: 48,
-    alignItems: "center",
-    justifyContent: "center",
-  }
-
-  return (
-    <>
-      <View style={iconStyles}>
-        <AntDesign name="home" size={28} color={colors.palette.primary500} />
-      </View>
-      <View style={iconStyles}>
-        <MaterialCommunityIcons
-          name="face-recognition"
-          size={28}
-          color={colors.palette.primary500}
-        />
-      </View>
-      <View style={iconStyles}>
-        <Ionicons name="wallet" size={28} color={colors.palette.primary500} />
-      </View>
-      <View style={iconStyles}>
-        <AntDesign name="user" size={28} color={colors.palette.primary500} />
-      </View>
-    </>
-  )
-}
 
 const $container: ViewStyle = {
   paddingHorizontal: 24,
@@ -84,7 +101,7 @@ const $section: ViewStyle = {
 }
 
 const $balanceSection: ViewStyle = {
-  marginVertical: 48,
+  marginTop: 48,
 }
 
 const $emptyWalletSection: ViewStyle = {
@@ -138,7 +155,35 @@ const $balanceDivider: ViewStyle = {
   borderColor: "#3E1C6C69",
 }
 
-const $balanceAmoutStyle: TextStyle = {
+const $currencyTitle: TextStyle = {
+  color: "#403F46",
+  fontSize: 14,
+  marginVertical: 12,
+}
+const $balanceAmountStyle: TextStyle = {
   color: colors.palette.primary500,
   fontSize: 40,
+}
+
+const $currenciesWrapper: ViewStyle = {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  gap: 8,
+}
+
+const $currencyContainer: ViewStyle = {
+  paddingHorizontal: 12,
+  paddingVertical: 8,
+  backgroundColor: "#ddd9f0",
+  borderRadius: 50,
+  width: 160,
+  alignItems: "center",
+}
+
+const $currentText: TextStyle = {
+  color: colors.palette.primary500,
+}
+
+const $currenciesContainer: ViewStyle = {
+  marginBottom: 48,
 }

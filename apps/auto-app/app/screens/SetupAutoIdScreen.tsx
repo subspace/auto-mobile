@@ -107,31 +107,31 @@ export const SetupAutoIdScreen = observer(function SetupAutoId(props: SetupAutoI
   const store = useStores()
   const asyncFunction = async () => {
     try {
-      // await new Promise((resolve) =>
-      //   setTimeout(async () => {
-      // Simulate an asynchronous operation, e.g., fetching data from an API
-      const autoWallet = await genAutoWallet() // Simulated delay
-      store.authenticationStore.setAutoId(autoWallet.autoId)
-      store.authenticationStore.setSubspaceAddress(autoWallet.subspaceAddress)
-      store.authenticationStore.setEvmAddresses(autoWallet.evmAddresses)
-      props.navigation.navigate("RecoveryPhrase")
-      const seedPhraseWords = autoWallet.recoveredSeedPhrase.split(" ")
-      store.recoveryStore.setWord1(seedPhraseWords[0])
-      store.recoveryStore.setWord2(seedPhraseWords[1])
-      store.recoveryStore.setWord3(seedPhraseWords[2])
-      store.recoveryStore.setWord4(seedPhraseWords[3])
-      store.recoveryStore.setWord5(seedPhraseWords[4])
-      store.recoveryStore.setWord6(seedPhraseWords[5])
-      store.recoveryStore.setWord7(seedPhraseWords[6])
-      store.recoveryStore.setWord8(seedPhraseWords[7])
-      store.recoveryStore.setWord9(seedPhraseWords[8])
-      store.recoveryStore.setWord10(seedPhraseWords[9])
-      store.recoveryStore.setWord11(seedPhraseWords[10])
-      store.recoveryStore.setWord12(seedPhraseWords[11])
-      //   resolve(undefined)
-      //   return undefined
-      // }, 5000),
-      // )
+      await new Promise((resolve) =>
+        setTimeout(async () => {
+          // Simulate an asynchronous operation, e.g., fetching data from an API
+          const autoWallet = await genAutoWallet() // Simulated delay
+          store.authenticationStore.setAutoId(autoWallet.autoId)
+          store.authenticationStore.setSubspaceAddress(autoWallet.subspaceAddress)
+          store.authenticationStore.setEvmAddresses(autoWallet.evmAddresses)
+          props.navigation.navigate("RecoveryPhrase")
+          const seedPhraseWords = autoWallet.recoveredSeedPhrase.split(" ")
+          store.recoveryStore.setWord1(seedPhraseWords[0])
+          store.recoveryStore.setWord2(seedPhraseWords[1])
+          store.recoveryStore.setWord3(seedPhraseWords[2])
+          store.recoveryStore.setWord4(seedPhraseWords[3])
+          store.recoveryStore.setWord5(seedPhraseWords[4])
+          store.recoveryStore.setWord6(seedPhraseWords[5])
+          store.recoveryStore.setWord7(seedPhraseWords[6])
+          store.recoveryStore.setWord8(seedPhraseWords[7])
+          store.recoveryStore.setWord9(seedPhraseWords[8])
+          store.recoveryStore.setWord10(seedPhraseWords[9])
+          store.recoveryStore.setWord11(seedPhraseWords[10])
+          store.recoveryStore.setWord12(seedPhraseWords[11])
+          resolve(undefined)
+          return undefined
+        }, 5000),
+      )
     } catch (e) {
       console.log("error", { e })
       store.authenticationStore.setAutoId("")
