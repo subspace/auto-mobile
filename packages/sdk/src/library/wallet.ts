@@ -190,17 +190,21 @@ export async function generateAutoWallet(
 export async function isAutoIdVerified(
   autoId: string | bigint
 ): Promise<boolean> {
-  // client
-  const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
-
-  const didRegistryContract: Contract = new ethers.Contract(
-    DID_REGISTRY_ADDRESS,
-    abi,
-    provider
-  );
-
-  // get the group ID
-  const groupId: BigNumberish = await didRegistryContract.groupId();
-
-  return await approach1(groupId, BigInt(autoId));
+  try {
+    // client
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+    
+    const didRegistryContract: Contract = new ethers.Contract(
+      DID_REGISTRY_ADDRESS,
+      abi,
+      provider
+    );
+      
+    // get the group ID
+    const groupId: BigNumberish = await didRegistryContract.groupId();
+    
+    return await approach1(groupId, BigInt(autoId));
+  } catch (error) {
+    throw new Error(`Error thrown when verifying AutoId: ${error}`);
+  }
 }
