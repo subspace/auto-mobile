@@ -11,6 +11,7 @@ export async function genAutoWallet() {
   await cryptoWaitReady(); // Wait for WASM crypto initialization
   const novaEvmDomainRpcApiUrl = "https://nova.gemini-3g.subspace.network/ws";
   const autoWallet = await generateAutoWallet(novaEvmDomainRpcApiUrl, 5);
+  console.log("autoWallet", autoWallet)
   log.info({ autoWallet })
   log.info("Subspace address:", autoWallet.subspaceAddress);
   log.info("EVM addresses:", autoWallet.evmAddresses);

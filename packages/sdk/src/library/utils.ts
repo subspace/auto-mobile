@@ -134,3 +134,11 @@ export const getSecureStoredShares = async () => {
   const resolvedResult = await Promise.all(promises);
   return resolvedResult.filter((result) => !!result).flat();
 };
+
+export const clearAlltheShares = () => {
+  const sharesIndex = new Array(SHARES_SIZE).fill(null);
+  const promises = sharesIndex.map((_, index) => {
+    return SecureStorage.deleteItemAsync(`${SECRET_SHARES}_${index}`);
+  });
+  return Promise.all(promises);
+};
