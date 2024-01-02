@@ -129,6 +129,7 @@ export async function generateAutoWallet(
     const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
 
     // Loop until a valid Auto ID is generated
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       // Generate a new random seed phrase
       seedPhrase = await deferTask(() => mnemonicGenerate());

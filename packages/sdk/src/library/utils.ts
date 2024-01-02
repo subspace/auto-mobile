@@ -95,6 +95,7 @@ export const storeSecureData = async <T>(key: string, value: T) => {
  * @returns The retrieved data of the specified type, or undefined if not found.
  */
 export const getSecureData = async <T>(key: string) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const value = await SecureStorage.getItemAsync(key);
     if (value !== null) {

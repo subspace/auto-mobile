@@ -256,6 +256,12 @@ importers:
       '@types/react-native':
         specifier: 0.70.0
         version: 0.70.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.13.1
+        version: 6.13.2(@typescript-eslint/parser@6.13.2)(eslint@8.55.0)(typescript@5.3.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.13.1
+        version: 6.13.2(eslint@8.55.0)(typescript@5.3.3)
       commitlint:
         specifier: ^17.0.2
         version: 17.0.2
@@ -263,7 +269,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       eslint:
-        specifier: ^8.4.1
+        specifier: ^8.55.0
         version: 8.55.0
       eslint-config-prettier:
         specifier: ^8.5.0
