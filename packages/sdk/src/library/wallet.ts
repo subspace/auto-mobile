@@ -37,7 +37,7 @@ const abi = DidRegistryJson.abi;
  * @returns True if the Auto ID exists on-chain, false otherwise
  */
 async function checkIfAutoIdExistsOnChain(
-  _provider: JsonRpcProvider,
+  provider: JsonRpcProvider,
   seedPhrase: string
 ): Promise<boolean> {
   // TODO: connect to the main EVM domain (where DID registry is deployed)
@@ -48,10 +48,10 @@ async function checkIfAutoIdExistsOnChain(
   const identity = getIdentityFromSeed(seedPhrase);
 
   // get the commitment
-  const _commitment = identity.commitment;
+  const commitment = identity.commitment;
 
   // get the nullifier hash (poseidon)
-  const _nullifier = identity.nullifier;
+  const nullifier = identity.nullifier;
   // get nullifier hash (poseidon) from the identity
 
   // call the DID registry contract to check if the identity exists
