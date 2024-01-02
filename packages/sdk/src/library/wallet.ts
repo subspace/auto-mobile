@@ -11,18 +11,18 @@
  * Doc: https://www.notion.so/subspacelabs/Subspace-Unified-Account-Technical-6b73858668984751bc3e10356721990b
  */
 
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { ethers, Wallet, Contract } from 'ethers';
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { deferTask, checkBalance } from './utils';
+import { Contract, Wallet, ethers } from 'ethers';
+import {
+  DID_REGISTRY_ADDRESS,
+  NOVA_RPC_URL,
+  SIGNER_PRIVATE_KEY,
+} from './constants';
 import { getAutoIdFromSeed, getIdentityFromSeed } from './did';
 import { generateSssSharesFrom } from './recovery';
-import {
-  SIGNER_PRIVATE_KEY,
-  NOVA_RPC_URL,
-  DID_REGISTRY_ADDRESS,
-} from './constants';
+import { checkBalance, deferTask } from './utils';
 
 // Import the DidRegistry ABI from the JSON file
 import DidRegistryJson from '../../abi/DidRegistry.json';
@@ -37,7 +37,7 @@ const abi = DidRegistryJson.abi;
  * @returns True if the Auto ID exists on-chain, false otherwise
  */
 async function checkIfAutoIdExistsOnChain(
-  provider: JsonRpcProvider,
+  _provider: JsonRpcProvider,
   seedPhrase: string
 ): Promise<boolean> {
   // TODO: connect to the main EVM domain (where DID registry is deployed)
@@ -48,10 +48,10 @@ async function checkIfAutoIdExistsOnChain(
   const identity = getIdentityFromSeed(seedPhrase);
 
   // get the commitment
-  const commitment = identity.commitment;
+  const _commitment = identity.commitment;
 
   // get the nullifier hash (poseidon)
-  const nullifier = identity.nullifier;
+  const _nullifier = identity.nullifier;
   // get nullifier hash (poseidon) from the identity
 
   // call the DID registry contract to check if the identity exists
