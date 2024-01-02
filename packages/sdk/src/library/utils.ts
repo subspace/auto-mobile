@@ -1,6 +1,6 @@
 import * as SecureStorage from 'expo-secure-store';
 import { SECRET_SHARES, NUM_OF_SHARES, THRESHOLD } from './constants';
-import { ethers, Wallet, BigNumberish } from 'ethers';
+import { ethers, Wallet, type BigNumberish } from 'ethers';
 import { MIN_BALANCE_SIGNER } from './constants';
 import { SemaphoreSubgraph } from '@semaphore-protocol/data';
 

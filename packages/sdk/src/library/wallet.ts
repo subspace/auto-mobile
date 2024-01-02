@@ -14,7 +14,7 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { Contract, Wallet, ethers, BigNumberish } from 'ethers';
+import { Contract, Wallet, ethers, type BigNumberish } from 'ethers';
 import {
   DID_REGISTRY_ADDRESS,
   NOVA_RPC_URL,
