@@ -140,7 +140,7 @@ export const getSecureStoredShares = async () => {
 export async function checkBalance(signer: Wallet) {
   // check if sufficient balance is available
   signer.provider?.getBalance(signer.address).then((balance) => {
-    if (balance < ethers.parseEther(MIN_BALANCE_SIGNER)) {
+    if (balance < ethers.utils.parseEther(MIN_BALANCE_SIGNER)) {
       throw new Error(
         `The address ${signer.address} does not have sufficient balance to send transactions`
       );

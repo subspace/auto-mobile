@@ -4,6 +4,7 @@ export const THRESHOLD = 10;
 export const SECRET_SHARES = 'secret-shares';
 
 // Onchain related constants
+// TODO: Move to some cloud storage for better security
 export const SIGNER_PRIVATE_KEY =
   '924352f321cffc9f53dc81f8172869bc39b1badf7de9fe08864ca476fa553ddf';
 export const NOVA_RPC_URL = 'https://nova.gemini-3g.subspace.network/ws';

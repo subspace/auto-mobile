@@ -153,7 +153,7 @@
     "@polkadot/util-crypto": "^12.6.1",
     "@semaphore-protocol/identity": "^3.15.1",
     "react-native-polyfill-globals": "3.1.0",
-    "ethers": "6.9.0",
+    "ethers": "^5.4.7",
     "react-native-get-random-values": "1.10.0",
     "expo-secure-store": "12.5.0"
   }

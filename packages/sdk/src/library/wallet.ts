@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Wallet module for Auto.
  * This module creates
@@ -12,7 +13,8 @@
 
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { JsonRpcProvider, Mnemonic, ethers, Wallet, Contract } from 'ethers';
+import { ethers, Wallet, Contract } from 'ethers';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { deferTask, checkBalance } from './utils';
 import { getAutoIdFromSeed, getIdentityFromSeed } from './did';
 import { generateSssSharesFrom } from './recovery';
@@ -71,8 +73,7 @@ export function generateEvmAddressesFromSeed(
   numOfAddresses: number
 ): string[] {
   const addresses: string[] = [];
-  const mnemonic = Mnemonic.fromPhrase(seedPhrase); // Convert the seed phrase to mnemonic
-  const masterNode = ethers.HDNodeWallet.fromMnemonic(mnemonic); // Create a master node from the seed phrase
+  const masterNode = ethers.utils.HDNode.fromMnemonic(seedPhrase); // Create a master node from the seed phrase
 
   for (let i = 0; i < numOfAddresses; i++) {
     const path = `m/44'/60'/0'/0/${i}`; // Standard Ethereum derivation path according to BIP-44
@@ -125,7 +126,7 @@ export async function generateAutoWallet(
     let seedPhrase = '';
 
     // client
-    const provider = new ethers.JsonRpcProvider(NOVA_RPC_URL);
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
 
     // Loop until a valid Auto ID is generated
     while (true) {
