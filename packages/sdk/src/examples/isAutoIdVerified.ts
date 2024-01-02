@@ -1,20 +1,19 @@
 /**
- * Generate Auto wallet for an individual as unified account with
- * multiple addresses on Subspace Network (relay + domains).
+ * Is Auto Id Verified
  */
+
+import { isAutoIdVerified, generateAutoWallet } from '../library/wallet';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
-import { generateAutoWallet } from '../library/wallet';
 
 async function main() {
-  console.log(
-    '\n=======Generate Auto Wallet (Unified Subspace account)========'
-  );
+  console.log('\n=======Is Auto Id Verified========');
   await cryptoWaitReady(); // Wait for WASM crypto initialization
   const [autoWallet, txHash] = await generateAutoWallet(5);
-  console.log('Subspace address:', autoWallet.subspaceAddress);
-  console.log('EVM addresses:', autoWallet.evmAddresses);
   console.log('Auto ID:', autoWallet.autoId);
   console.log(`Transaction hash for adding the new user to group: ${txHash}`);
+
+  const isVerified = await isAutoIdVerified(autoWallet.autoId);
+  console.log(`Is Auto ID verified: ${isVerified}`);
 }
 
 main()

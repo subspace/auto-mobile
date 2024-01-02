@@ -14,7 +14,7 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { Contract, Wallet, ethers } from 'ethers';
+import { Contract, Wallet, ethers, BigNumberish } from 'ethers';
 import {
   DID_REGISTRY_ADDRESS,
   NOVA_RPC_URL,
@@ -22,7 +22,7 @@ import {
 } from './constants';
 import { getAutoIdFromSeed, getIdentityFromSeed } from './did';
 import { generateSssSharesFrom } from './recovery';
-import { checkBalance, deferTask } from './utils';
+import { checkBalance, deferTask, approach1 } from './utils';
 
 // Import the DidRegistry ABI from the JSON file
 import DidRegistryJson from '../../abi/DidRegistry.json';
@@ -115,13 +115,12 @@ export interface AutoWallet {
  * returning the SS58 address and the EVM addresses
  * NOTE: for simplicity, considered only EVM based domains
  *
- * @param mainEvmDomainRpcApiUrl The RPC API URL of the main EVM domain
  * @param numOfEvmChains The number of EVM chains to generate addresses for
- * @returns The AutoWallet object
+ * @returns The [AutoWallet, TxHash] object
  */
 export async function generateAutoWallet(
   numOfEvmChains: number
-): Promise<AutoWallet> {
+): Promise<[AutoWallet, string]> {
   try {
     let seedPhrase = '';
 
@@ -152,7 +151,7 @@ export async function generateAutoWallet(
     // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
     const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
 
-    // TODO: add the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
+    // add the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
     const signer: Wallet = new Wallet(`0x${SIGNER_PRIVATE_KEY}`, provider);
     await checkBalance(signer);
 
@@ -166,7 +165,6 @@ export async function generateAutoWallet(
 
     // send the transaction to add the user to the group
     const tx = await didRegistryContract.connect(signer).addToGroup(autoId);
-    console.log(`Transaction hash for adding a new user to group: ${tx.hash}`);
 
     // Get the Subspace address from seed phrase
     const subspaceAddress = await deferTask(() =>
@@ -178,8 +176,31 @@ export async function generateAutoWallet(
       generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
     );
 
-    return { subspaceAddress, evmAddresses, autoId };
+    return [{ subspaceAddress, evmAddresses, autoId }, tx.hash];
   } catch (error) {
     throw new Error(`Error thrown during Auto account generation: ${error}`);
   }
+}
+
+/**
+ * Checks if the given Auto ID is verified.
+ * @param autoId The Auto ID to check.
+ * @returns A Promise that resolves to a boolean indicating whether the Auto ID is verified or not.
+ */
+export async function isAutoIdVerified(
+  autoId: string | bigint
+): Promise<boolean> {
+  // client
+  const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+
+  const didRegistryContract: Contract = new ethers.Contract(
+    DID_REGISTRY_ADDRESS,
+    abi,
+    provider
+  );
+
+  // get the group ID
+  const groupId: BigNumberish = await didRegistryContract.groupId();
+
+  return await approach1(groupId, BigInt(autoId));
 }

@@ -1,7 +1,8 @@
 import * as SecureStorage from 'expo-secure-store';
 import { SECRET_SHARES, NUM_OF_SHARES, THRESHOLD } from './constants';
-import { ethers, Wallet } from 'ethers';
+import { ethers, Wallet, BigNumberish } from 'ethers';
 import { MIN_BALANCE_SIGNER } from './constants';
+import { SemaphoreSubgraph } from '@semaphore-protocol/data';
 
 /**
  * Convert string to Uint8Array
@@ -147,4 +148,21 @@ export async function checkBalance(signer: Wallet) {
       );
     }
   });
+}
+
+// Approach-1
+// Using `SemaphoreSubgraph`
+// Doc: https://www.notion.so/subspacelabs/Semaphore-61b59172253b4bc88872a8559aafb0ba?pvs=4#fc2880da2cb14d0bb8501f15e793f42d
+export async function approach1(
+  groupId: BigNumberish,
+  identityCommitment: bigint
+): Promise<boolean> {
+  const semaphoreSubgraph = new SemaphoreSubgraph(
+    'https://subgraph.satsuma-prod.com/c74ef9357a5b/subspace/semaphore-test/version/v0.0.1-new-version/api'
+  );
+  // using `SemaphoreSubgraph`
+  return await semaphoreSubgraph.isGroupMember(
+    groupId.toString(),
+    identityCommitment.toString()
+  );
 }
