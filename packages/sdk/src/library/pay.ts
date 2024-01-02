@@ -5,7 +5,16 @@
 import { ethers, BigNumber } from 'ethers';
 import { NOVA_RPC_URL, SIGNER_PRIVATE_KEY } from './constants';
 
-export async function pay(
+/**
+ * Sends a payment transaction on the Nova network.
+ *
+ * @param recipient - The address of the recipient.
+ * @param amount - The amount (in Wei) of the payment.
+ * @param sender - (Optional) The signer of the transaction. If not provided, a new signer will be created using the private key.
+ * @returns A promise that resolves to the transaction hash.
+ * @throws An error if the sender has insufficient balance.
+ */
+export async function payOnNova(
   recipient: string,
   amount: BigNumber,
   sender?: ethers.Signer
