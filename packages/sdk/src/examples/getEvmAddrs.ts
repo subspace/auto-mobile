@@ -1,11 +1,11 @@
 /**
- * Generate EVM addresses (following BIP-32) from a seed phrase
+ * Get/Retrieve EVM addresses (following BIP-32) from a seed phrase
  */
 
 import { generateEvmAddressesFromSeed } from '../library/wallet';
 
 function main() {
-  console.log('\n=======Generate EVM addresses from seed phrase========');
+  console.log('\n=======Retrieve EVM addresses from seed phrase========');
 
   const seedPhrase =
     'lock frost nation imitate party medal knee cigar rough wine document immense';

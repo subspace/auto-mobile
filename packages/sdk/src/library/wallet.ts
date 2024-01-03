@@ -114,7 +114,7 @@ export interface AutoWallet {
  * Generates an AutoWallet with a unique Auto ID and performs various operations related to the wallet.
  * Random seed is used to generate the addresses for relay chain and EVM chains (based on BIP-32).
  * NOTE: for simplicity, considered only EVM based domains
- * 
+ *
  * @param numOfEvmChains The number of EVM chains to generate addresses for.
  * @returns A promise that resolves to an array containing the generated AutoWallet and the transaction hash.
  * @throws If an error occurs during Auto account generation.
@@ -182,13 +182,41 @@ export async function generateAutoWallet(
 
     return [{ subspaceAddress, evmAddresses, autoId }, tx.hash];
   } catch (error) {
-    throw new Error(`Error thrown during Auto account generation: ${error}`);
+    throw new Error(`Error thrown during Auto wallet generation: ${error}`);
+  }
+}
+
+/**
+ * Get/Retrieve the AutoWallet from given seed phrase
+ * NOTE: No on-chain transaction is performed here
+ */
+export async function getAutoWallet(
+  seedPhrase: string, 
+  numOfEvmChains: number,
+): Promise<AutoWallet> {
+  try {
+    // get the Auto ID (already added to the group) from the seed phrase
+    const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
+
+    // Get the Subspace address from seed phrase
+    const subspaceAddress = await deferTask(() =>
+      generateSubspaceAddress(seedPhrase)
+    );
+
+    // Get the EVM addresses from the seed phrase (BIP-32)
+    const evmAddresses = await deferTask(() =>
+      generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
+    );
+
+    return { subspaceAddress, evmAddresses, autoId };
+  } catch (error) {
+    throw new Error(`Error thrown during retrieving Auto wallet: ${error}`);
   }
 }
 
 /**
  * Verifies if the given AutoId is verified.
- * 
+ *
  * @param autoId - The AutoId to be verified.
  * @returns A Promise that resolves to a boolean indicating if the AutoId is verified.
  * @throws An error if there is an issue verifying the AutoId.
@@ -199,16 +227,16 @@ export async function isAutoIdVerified(
   try {
     // client
     const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
-    
+
     const didRegistryContract: Contract = new ethers.Contract(
       DID_REGISTRY_ADDRESS,
       abi,
       provider
     );
-      
+
     // get the group ID
     const groupId: BigNumberish = await didRegistryContract.groupId();
-    
+
     return await approach1(groupId, BigInt(autoId));
   } catch (error) {
     throw new Error(`Error thrown when verifying AutoId: ${error}`);
