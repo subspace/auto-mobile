@@ -166,11 +166,3 @@ export async function approach1(
     identityCommitment.toString()
   );
 }
-=======
-export const clearAlltheShares = () => {
-  const sharesIndex = new Array(SHARES_SIZE).fill(null);
-  const promises = sharesIndex.map((_, index) => {
-    return SecureStorage.deleteItemAsync(`${SECRET_SHARES}_${index}`);
-  });
-  return Promise.all(promises);
-};
