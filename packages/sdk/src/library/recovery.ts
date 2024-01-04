@@ -33,7 +33,8 @@ import {
 export async function generateSssSharesFrom(
   seedPhrase: string
 ): Promise<Uint8Array[]> {
-  // convert to 8-bit/1-byte array
+  // TODO:
+  // convert to 8-bit bytes i.e. byte array
   const secret = toUint8Array(seedPhrase);
   const shares = await split(secret, NUM_OF_SHARES, THRESHOLD);
 
