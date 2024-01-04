@@ -29,39 +29,6 @@ import DidRegistryJson from '../../abi/DidRegistry.json';
 const abi = DidRegistryJson.abi;
 
 /**
- * TODO: Check for Auto ID if added on-chain to one of the EVM domains
- * (where DID registry is deployed).
- *
- * @param api The RPC API URL of the main EVM domain
- * @param seedPhrase The seed phrase used to generate the addresses to derive the identity
- * @returns True if the Auto ID exists on-chain, false otherwise
- */
-async function checkIfAutoIdExistsOnChain(
-  provider: JsonRpcProvider,
-  seedPhrase: string
-): Promise<boolean> {
-  // TODO: connect to the main EVM domain (where DID registry is deployed)
-  // apply `is-user-verified` script here after there is 100% certainty that
-  // it would not throw any timeout error due to collecting event logs from the chain
-
-  // get the identity from seed phrase
-  const identity = await deferTask(() => getIdentityFromSeed(seedPhrase));
-
-  // get the commitment
-  const commitment = identity.commitment;
-
-  // get the nullifier hash (poseidon)
-  const nullifier = identity.nullifier;
-  // get nullifier hash (poseidon) from the identity
-
-  // call the DID registry contract to check if the identity exists
-
-  // console.log({ api, commitment, nullifier });
-  // doesn't exist by default
-  return false;
-}
-
-/**
  * Generates Ethereum addresses from a given seed phrase following BIP-32.
  *
  * @param seedPhrase - The seed phrase used to generate the addresses.
@@ -110,35 +77,6 @@ export interface AutoWallet {
   autoId: string | bigint;
 }
 
-const findOrGenerateSeedPhrase = async (mainEvmDomainRpcApiUrl: string) => {
-  let seedPhrase = await recoverSeedFrom();
-
-  if (seedPhrase) {
-    return seedPhrase;
-  }
-
-  // Loop until a valid Auto ID is generated
-  while (true) {
-    // Generate a new random seed phrase
-    seedPhrase = await deferTask(() => mnemonicGenerate());
-
-    // TODO: Check for a valid Auto ID
-    const isAutoIdPreExist = await checkIfAutoIdExistsOnChain(
-      mainEvmDomainRpcApiUrl,
-      seedPhrase
-    );
-
-    if (!isAutoIdPreExist) {
-      // break the loop if the Auto ID doesn't pre-exist onchain
-      break;
-    }
-  }
-  // store the seed phrase to IPFS peers via SSS scheme (store in a secure place)
-  await generateSssSharesFrom(seedPhrase);
-
-  return seedPhrase;
-};
-
 /**
  * Generates an AutoWallet with a unique Auto ID and performs various operations related to the wallet.
  * Random seed is used to generate the addresses for relay chain and EVM chains (based on BIP-32).
@@ -152,10 +90,34 @@ export async function generateAutoWallet(
   numOfEvmChains: number
 ): Promise<[AutoWallet, string]> {
   try {
-    const seedPhrase = await findOrGenerateSeedPhrase(mainEvmDomainRpcApiUrl);
+    let seedPhrase = '',
+    autoId: string | bigint = '';
 
-    // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
-    const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
+    // client
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+
+    // TODO: Might remove later after confirming no security risk.
+    // Loop until a valid Auto ID is generated
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      // Generate a new random seed phrase
+      seedPhrase = await deferTask(() => mnemonicGenerate());
+
+      // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
+      autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
+
+      // WARN: might take some time to find the unique Auto ID
+      // Check for a valid/unique Auto ID
+      const isAutoIdPreExist = await isAutoIdVerified(autoId);
+
+      if (!isAutoIdPreExist) {
+        // break the loop if the Auto ID doesn't pre-exist onchain
+        break;
+      }
+    }
+
+    // store the seed phrase
+    await generateSssSharesFrom(seedPhrase);
 
     // add the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
     const signer: Wallet = new Wallet(`0x${SIGNER_PRIVATE_KEY}`, provider);
@@ -174,7 +136,7 @@ export async function generateAutoWallet(
 
     // wait for the transaction to be mined
     await tx.wait();
-    
+
     // Get the Subspace address from seed phrase
     const subspaceAddress = await deferTask(() =>
       generateSubspaceAddress(seedPhrase)
