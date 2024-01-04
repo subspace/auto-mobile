@@ -53,18 +53,22 @@ export async function generateSssSharesFrom(
  * @param shares The SSS shares at least {THRESHOLD} shares
  * @returns The reconstructed seed phrase as ASCII string
  */
-export async function recoverSeedFrom(): Promise<string> {
-  const shares = await getSecureStoredShares();
+export async function recoverSeedFrom(): Promise<string | undefined> {
+  try {
+    const shares = await getSecureStoredShares();
 
-  if (shares.length < THRESHOLD) {
-    throw new Error(`At least ${THRESHOLD} shares are required for recovery`);
+    if (shares.length < THRESHOLD) {
+      throw new Error(`At least ${THRESHOLD} shares are required for recovery`);
+    }
+
+    // reconstruct the secret
+    const reconstructedSeedPhrase = await combine(shares);
+
+    // Convert Uint8Array to ASCII string
+    const seedPhrase = Uint8ArrayToAsciiString(reconstructedSeedPhrase);
+
+    return seedPhrase;
+  } catch {
+    return undefined;
   }
-
-  // reconstruct the secret
-  const reconstructedSeedPhrase = await combine(shares);
-
-  // Convert Uint8Array to ASCII string
-  const seedPhrase = Uint8ArrayToAsciiString(reconstructedSeedPhrase);
-
-  return seedPhrase;
 }
