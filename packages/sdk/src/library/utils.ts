@@ -1,5 +1,8 @@
 import * as SecureStorage from 'expo-secure-store';
-import { SECRET_SHARES, SHARES_SIZE, THRESHOLD } from './constants';
+import { SECRET_SHARES, NUM_OF_SHARES, THRESHOLD } from './constants';
+import { ethers, Wallet, type BigNumberish } from 'ethers';
+import { MIN_BALANCE_SIGNER } from './constants';
+import { SemaphoreSubgraph } from '@semaphore-protocol/data';
 
 /**
  * Convert string to Uint8Array
@@ -93,6 +96,7 @@ export const storeSecureData = async <T>(key: string, value: T) => {
  * @returns The retrieved data of the specified type, or undefined if not found.
  */
 export const getSecureData = async <T>(key: string) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     const value = await SecureStorage.getItemAsync(key);
     if (value !== null) {
@@ -122,7 +126,7 @@ export const storeSecureShares = (shares: Uint8Array[]) => {
  * @throws Error if any share is not found.
  */
 export const getSecureStoredShares = async () => {
-  const sharesIndex = new Array(SHARES_SIZE).fill(null);
+  const sharesIndex = new Array(NUM_OF_SHARES).fill(null);
   const promises = sharesIndex.map(async (_, index) => {
     const value = await SecureStorage.getItemAsync(`${SECRET_SHARES}_${index}`);
     if (value !== null) {
@@ -135,6 +139,34 @@ export const getSecureStoredShares = async () => {
   return resolvedResult.filter((result) => !!result).flat();
 };
 
+export async function checkBalance(signer: Wallet) {
+  // check if sufficient balance is available
+  signer.provider?.getBalance(signer.address).then((balance) => {
+    if (balance < ethers.utils.parseEther(MIN_BALANCE_SIGNER)) {
+      throw new Error(
+        `The address ${signer.address} does not have sufficient balance to send transactions`
+      );
+    }
+  });
+}
+
+// Approach-1
+// Using `SemaphoreSubgraph`
+// Doc: https://www.notion.so/subspacelabs/Semaphore-61b59172253b4bc88872a8559aafb0ba?pvs=4#fc2880da2cb14d0bb8501f15e793f42d
+export async function approach1(
+  groupId: BigNumberish,
+  identityCommitment: bigint
+): Promise<boolean> {
+  const semaphoreSubgraph = new SemaphoreSubgraph(
+    'https://subgraph.satsuma-prod.com/c74ef9357a5b/subspace/semaphore-test/version/v0.0.1-new-version/api'
+  );
+  // using `SemaphoreSubgraph`
+  return await semaphoreSubgraph.isGroupMember(
+    groupId.toString(),
+    identityCommitment.toString()
+  );
+}
+=======
 export const clearAlltheShares = () => {
   const sharesIndex = new Array(SHARES_SIZE).fill(null);
   const promises = sharesIndex.map((_, index) => {

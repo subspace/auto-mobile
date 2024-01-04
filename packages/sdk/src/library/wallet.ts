@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Wallet module for Auto.
  * This module creates
@@ -10,12 +11,22 @@
  * Doc: https://www.notion.so/subspacelabs/Subspace-Unified-Account-Technical-6b73858668984751bc3e10356721990b
  */
 
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { Mnemonic, ethers } from 'ethers';
+import { Contract, Wallet, ethers, type BigNumberish } from 'ethers';
+import {
+  DID_REGISTRY_ADDRESS,
+  NOVA_RPC_URL,
+  SIGNER_PRIVATE_KEY,
+} from './constants';
 import { getAutoIdFromSeed, getIdentityFromSeed } from './did';
-import { generateSssSharesFrom, recoverSeedFrom } from './recovery';
-import { deferTask } from './utils';
+import { generateSssSharesFrom } from './recovery';
+import { checkBalance, deferTask, approach1 } from './utils';
+
+// Import the DidRegistry ABI from the JSON file
+import DidRegistryJson from '../../abi/DidRegistry.json';
+const abi = DidRegistryJson.abi;
 
 /**
  * TODO: Check for Auto ID if added on-chain to one of the EVM domains
@@ -26,10 +37,12 @@ import { deferTask } from './utils';
  * @returns True if the Auto ID exists on-chain, false otherwise
  */
 async function checkIfAutoIdExistsOnChain(
-  api: string,
+  provider: JsonRpcProvider,
   seedPhrase: string
 ): Promise<boolean> {
   // TODO: connect to the main EVM domain (where DID registry is deployed)
+  // apply `is-user-verified` script here after there is 100% certainty that
+  // it would not throw any timeout error due to collecting event logs from the chain
 
   // get the identity from seed phrase
   const identity = await deferTask(() => getIdentityFromSeed(seedPhrase));
@@ -43,7 +56,7 @@ async function checkIfAutoIdExistsOnChain(
 
   // call the DID registry contract to check if the identity exists
 
-  console.log({ api, commitment, nullifier });
+  // console.log({ api, commitment, nullifier });
   // doesn't exist by default
   return false;
 }
@@ -60,10 +73,7 @@ export function generateEvmAddressesFromSeed(
   numOfAddresses: number
 ): string[] {
   const addresses: string[] = [];
-
-  const mnemonic = Mnemonic.fromPhrase(seedPhrase); // Convert the seed phrase to mnemonic
-
-  const masterNode = ethers.HDNodeWallet.fromMnemonic(mnemonic); // Create a master node from the seed phrase
+  const masterNode = ethers.utils.HDNode.fromMnemonic(seedPhrase); // Create a master node from the seed phrase
 
   for (let i = 0; i < numOfAddresses; i++) {
     const path = `m/44'/60'/0'/0/${i}`; // Standard Ethereum derivation path according to BIP-44
@@ -128,33 +138,81 @@ const findOrGenerateSeedPhrase = async (mainEvmDomainRpcApiUrl: string) => {
 
   return seedPhrase;
 };
+
 /**
  * Generate a new wallet with a random seed
  * returning the SS58 address and the EVM addresses
  * NOTE: for simplicity, considered only EVM based domains
  *
- * @param mainEvmDomainRpcApiUrl The RPC API URL of the main EVM domain
  * @param numOfEvmChains The number of EVM chains to generate addresses for
- * @returns The AutoWallet object
+ * @returns The [AutoWallet, TxHash] object
  */
 export async function generateAutoWallet(
-  mainEvmDomainRpcApiUrl: string,
   numOfEvmChains: number
-): Promise<AutoWallet> {
-  const seedPhrase = await findOrGenerateSeedPhrase(mainEvmDomainRpcApiUrl);
+): Promise<[AutoWallet, string]> {
+  try {
+    const seedPhrase = await findOrGenerateSeedPhrase(mainEvmDomainRpcApiUrl);
 
-  // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
-  const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
+    // get the Auto ID (valid that doesn't pre-existed onchain) from the seed phrase
+    const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
 
-  // Get the Subspace address from seed phrase
-  const subspaceAddress = await deferTask(() =>
-    generateSubspaceAddress(seedPhrase)
-  );
+    // add the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
+    const signer: Wallet = new Wallet(`0x${SIGNER_PRIVATE_KEY}`, provider);
+    await checkBalance(signer);
 
-  // Get the EVM addresses from the seed phrase (BIP-32)
-  const evmAddresses = await deferTask(() =>
-    generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
-  );
+    // instantiate the DID Registry contract instance via the address & provider
+    // contract instance
+    const didRegistryContract: Contract = new ethers.Contract(
+      DID_REGISTRY_ADDRESS,
+      abi,
+      provider
+    );
 
-  return { subspaceAddress, evmAddresses, autoId };
+    // send the transaction to add the user to the group
+    const tx = await didRegistryContract.connect(signer).addToGroup(autoId);
+
+    // wait for the transaction to be mined
+    await tx.wait();
+    
+    // Get the Subspace address from seed phrase
+    const subspaceAddress = await deferTask(() =>
+      generateSubspaceAddress(seedPhrase)
+    );
+
+    // Get the EVM addresses from the seed phrase (BIP-32)
+    const evmAddresses = await deferTask(() =>
+      generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
+    );
+
+    return [{ subspaceAddress, evmAddresses, autoId }, tx.hash];
+  } catch (error) {
+    throw new Error(`Error thrown during Auto account generation: ${error}`);
+  }
+}
+
+/**
+ * Checks if the given Auto ID is verified.
+ * @param autoId The Auto ID to check.
+ * @returns A Promise that resolves to a boolean indicating whether the Auto ID is verified or not.
+ */
+export async function isAutoIdVerified(
+  autoId: string | bigint
+): Promise<boolean> {
+  try {
+    // client
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+    
+    const didRegistryContract: Contract = new ethers.Contract(
+      DID_REGISTRY_ADDRESS,
+      abi,
+      provider
+    );
+      
+    // get the group ID
+    const groupId: BigNumberish = await didRegistryContract.groupId();
+    
+    return await approach1(groupId, BigInt(autoId));
+  } catch (error) {
+    throw new Error(`Error thrown when verifying AutoId: ${error}`);
+  }
 }
