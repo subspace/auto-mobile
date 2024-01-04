@@ -11,7 +11,6 @@
  * Doc: https://www.notion.so/subspacelabs/Subspace-Unified-Account-Technical-6b73858668984751bc3e10356721990b
  */
 
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 import { Contract, Wallet, ethers, type BigNumberish } from 'ethers';
@@ -20,8 +19,8 @@ import {
   NOVA_RPC_URL,
   SIGNER_PRIVATE_KEY,
 } from './constants';
-import { getAutoIdFromSeed, getIdentityFromSeed } from './did';
-import { generateSssSharesFrom } from './recovery';
+import { getAutoIdFromSeed } from './did';
+import { generateSssSharesFrom, recoverSeedFrom } from './recovery';
 import { checkBalance, deferTask, approach1 } from './utils';
 
 // Import the DidRegistry ABI from the JSON file
@@ -158,22 +157,20 @@ export async function generateAutoWallet(
  * NOTE: No on-chain transaction is performed here
  */
 export async function getAutoWallet(
-  seedPhrase: string, 
   numOfEvmChains: number,
+  seedPhrase?: string, 
 ): Promise<AutoWallet> {
   try {
-    // get the Auto ID (already added to the group) from the seed phrase
-    const autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
+    // recover seed phrase from SSS shares stored in local DB
+    const recoveredSeedPhrase = await recoverSeedFrom() || seedPhrase;
+    const seedString = String(recoveredSeedPhrase);
 
-    // Get the Subspace address from seed phrase
-    const subspaceAddress = await deferTask(() =>
-      generateSubspaceAddress(seedPhrase)
-    );
-
-    // Get the EVM addresses from the seed phrase (BIP-32)
-    const evmAddresses = await deferTask(() =>
-      generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
-    );
+    // get the Auto ID (already added to the group), Subspace, EVM addresses (BIP-32) from the seed phrase.
+    const [autoId, subspaceAddress, evmAddresses] = await Promise.all([
+      deferTask(() => getAutoIdFromSeed(seedString)),
+      deferTask(() => generateSubspaceAddress(seedString)),
+      deferTask(() => generateEvmAddressesFromSeed(seedString, numOfEvmChains)),
+    ]);
 
     return { subspaceAddress, evmAddresses, autoId };
   } catch (error) {

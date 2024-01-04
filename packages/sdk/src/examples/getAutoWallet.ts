@@ -10,7 +10,7 @@ async function main() {
     'lock frost nation imitate party medal knee cigar rough wine document immense';
   console.log('Seed phrase:', seedPhrase);
 
-  const autoWallet = await getAutoWallet(seedPhrase, 5);
+  const autoWallet = await getAutoWallet(5);
   console.log('Subspace address:', autoWallet.subspaceAddress);
   console.log('EVM addresses:', autoWallet.evmAddresses);
   console.log('Auto ID:', autoWallet.autoId);

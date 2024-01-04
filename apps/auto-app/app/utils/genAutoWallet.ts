@@ -8,12 +8,12 @@ import { cryptoWaitReady } from "@polkadot/util-crypto"
 
 export async function genAutoWallet() {
   await cryptoWaitReady() // Wait for WASM crypto initialization
-  const novaEvmDomainRpcApiUrl = "https://nova.gemini-3g.subspace.network/ws"
-  const autoWallet = await generateAutoWallet(novaEvmDomainRpcApiUrl, 5)
+  const [autoWallet, txHash] = await generateAutoWallet(5)
 
   console.log("Subspace address:", autoWallet.subspaceAddress)
   console.log("EVM addresses:", autoWallet.evmAddresses)
   console.log("Auto ID:", autoWallet.autoId)
+  console.log(`Transaction hash for adding the new user to group: ${txHash}`)
   const recoveredSeedPhrase = await recoverSeedFrom()
   return { ...autoWallet, recoveredSeedPhrase }
 }
