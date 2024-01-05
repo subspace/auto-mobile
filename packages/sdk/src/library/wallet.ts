@@ -131,7 +131,7 @@ export async function generateAutoWallet(
     );
 
     // send the transaction to add the user to the group
-    const tx = await didRegistryContract.connect(signer).addToGroup(autoId);
+    const tx = await didRegistryContract.connect(signer).register(autoId);
 
     // wait for the transaction to be mined
     await tx.wait();
