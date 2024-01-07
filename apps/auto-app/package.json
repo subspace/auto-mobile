@@ -41,6 +41,8 @@
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.0.2",
     "@shopify/flash-list": "1.4.3",
+    "@expo/metro-runtime": "2.2.16",
+    "@expo/metro-config": "0.10.7",
     "@auto/sdk": "*",
     "apisauce": "3.0.1",
     "date-fns": "^2.30.0",

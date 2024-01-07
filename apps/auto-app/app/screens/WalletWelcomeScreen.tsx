@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite"
-import React, { FC, useState } from "react"
+import React, { useCallback, useState } from "react"
 import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { Button, Screen, Text } from "../components"
 import { WalletHeader } from "../components/Wallet/WalletHeader"
 import { useStores } from "../models"
+import { WalletWelcomeStackScreenProps } from "../navigators/WalletWelcomeNavigator"
 import { colors, spacing } from "../theme"
 
 const currencies = [
@@ -23,10 +24,19 @@ const currencies = [
     dollarAmount: "20,000",
   },
 ]
-export const WelcomeScreen: FC = observer(function WelcomeScreen(_props) {
+
+export interface WalletWelcomeScreenProps extends WalletWelcomeStackScreenProps<"Welcome"> {}
+export const WalletWelcomeScreen = observer(function WelcomeScreen(
+  props: WalletWelcomeScreenProps,
+) {
+  const { navigation } = props
   const {
     authenticationStore: { fullname },
   } = useStores()
+
+  const makeTransactionHandler = useCallback(() => {
+    navigation.navigate("SearchFriend")
+  }, [navigation])
 
   const [currencyIndex, setCurrentIndex] = useState(0)
 
@@ -82,7 +92,12 @@ export const WelcomeScreen: FC = observer(function WelcomeScreen(_props) {
         )}
 
         <View style={$makeTransactionWrapper}>
-          <Button style={$makeTransactionButton} preset="reversed" text="Make a Transaction" />
+          <Button
+            style={$makeTransactionButton}
+            onPress={makeTransactionHandler}
+            preset="reversed"
+            text="Make a Transaction"
+          />
         </View>
       </View>
       {/* <View style={$footer}>{renderIcons()}</View> */}
