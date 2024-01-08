@@ -23,7 +23,7 @@ export const RecoveryPhraseScreen = observer(function RecoveryPhraseScreen(
     }
     // console.log("words", recoveryStore.seedPhrase, recoveryStore.validationError)
 
-    props.navigation.navigate("Wallet", { screen: "WalletWelcome" })
+    props.navigation.navigate("Wallet", { screen: "WalletWelcome", params: { screen: "Welcome" } })
   }, [recoveryStore.seedPhrase, recoveryStore.validationError])
 
   const seedPhraseCheckError = !!recoveryStore.validationError

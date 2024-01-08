@@ -39,6 +39,9 @@ export type AppStackParamList = {
   SetupAutoId: undefined
   RecoveryPhrase: undefined
   Wallet: NavigatorScreenParams<WalletTabParamList>
+  SendPayment: { selectedAutoId?: string; fullName?: string }
+  LastDetails: undefined
+  SendingPayment: undefined
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -77,6 +80,9 @@ const AppStack = observer(function AppStack() {
         <>
           <Stack.Screen name="RecoveryPhrase" component={Screens.RecoveryPhraseScreen} />
           <Stack.Screen name="Wallet" component={WalletNavigator} />
+          <Stack.Screen name="SendPayment" component={Screens.SendPaymentScreen} />
+          <Stack.Screen name="LastDetails" component={Screens.LastDetailsScreen} />
+          <Stack.Screen name="SendingPayment" component={Screens.SendingPaymentScreen} />
         </>
       )}
     </Stack.Navigator>

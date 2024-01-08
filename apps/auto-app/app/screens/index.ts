@@ -1,4 +1,7 @@
-export * from "./WelcomeScreen"
+export * from "./LastDetailsScreen"
+export * from "./SendPaymentScreen"
+export * from "./SendingPaymentScreen"
+export * from "./WalletWelcomeScreen"
 
 export * from "./LoginScreen"
 

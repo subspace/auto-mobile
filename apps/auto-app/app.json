@@ -29,7 +29,6 @@
       "bundleIdentifier": "com.subspaceautoapp"
     },
     "web": {
-      "favicon": "./assets/images/app-icon-web-favicon.png",
       "bundler": "metro"
     },
     "plugins": [

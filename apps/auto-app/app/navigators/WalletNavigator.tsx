@@ -1,150 +1,29 @@
-import {
-  BottomTabBarProps,
-  BottomTabScreenProps,
-  createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs"
-import { CompositeScreenProps } from "@react-navigation/native"
+import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native"
 import React from "react"
-import { Platform, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import { TextStyle, View, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Screen, Text } from "../components"
-import { WelcomeScreen } from "../screens"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 
-import { AntDesign, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { WalletHeader } from "../components/Wallet/WalletHeader"
+import { WalletTabBar } from "../components/WalletTabBar"
 import { ProfileScreen } from "../screens/Wallet/ProfileScreen"
+import { WalletWallecomeParamList, WalletWelcomeNavigator } from "./WalletWelcomeNavigator"
 
-const $iconLine: ViewStyle = {
-  width: 24,
-  borderWidth: 1,
-  borderColor: colors.palette.primary500,
-}
-const $iconContainer: ViewStyle = {
-  justifyContent: "center",
-  alignItems: "center",
-  rowGap: 2,
-}
-
-export function getTabBarIcon(routeName: string, focused: boolean) {
-  const iconSize = 28 // Customize the icon size as needed
-
-  switch (routeName) {
-    case "WalletHome":
-      return (
-        <View style={$iconContainer}>
-          <AntDesign
-            name="home"
-            size={iconSize}
-            color={colors.palette.primary500} // Customize active and inactive colors
-          />
-          {focused ? <View style={$iconLine} /> : null}
-        </View>
-      )
-    case "WalletFaceId":
-      return (
-        <View style={$iconContainer}>
-          <MaterialCommunityIcons
-            name="face-recognition"
-            size={iconSize}
-            color={colors.palette.primary500}
-          />
-          {focused ? <View style={$iconLine} /> : null}
-        </View>
-      )
-
-    case "WalletWelcome":
-      return (
-        <View style={$iconContainer}>
-          <Ionicons name="wallet" size={iconSize} color={colors.palette.primary500} />
-          {focused ? <View style={$iconLine} /> : null}
-        </View>
-      )
-    case "WalletProfile":
-      return (
-        <View style={$iconContainer}>
-          <AntDesign name="user" size={iconSize} color={colors.palette.primary500} />
-          {focused ? <View style={$iconLine} /> : null}
-        </View>
-      )
-    default:
-      return null // Return a default icon or null if the route name is not recognized
-  }
-}
-
-const $myTabBarContainer: ViewStyle = {
-  position: "absolute",
-  bottom: Platform.OS === "ios" ? 24 : 64,
-  elevation: 2,
-  height: 62,
-  left: 24,
-  right: 24,
-  backgroundColor: "#dfdcf0",
-  borderRadius: 10,
-  alignItems: "center",
-  flexDirection: "row",
-  padding: 8,
-  justifyContent: "space-between",
-  shadowColor: "#F7F5DF0",
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.5,
-}
-
-const $touchOpacityStyle: ViewStyle = {
-  flex: 1,
-}
-function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
-  return (
-    <View style={$myTabBarContainer}>
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key]
-
-        const isFocused = state.index === index
-
-        const onPress = () => {
-          const event = navigation.emit({
-            type: "tabPress",
-            target: route.key,
-            canPreventDefault: true,
-          })
-
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params)
-          }
-        }
-
-        const onLongPress = () => {
-          navigation.emit({
-            type: "tabLongPress",
-            target: route.key,
-          })
-        }
-
-        return (
-          <TouchableOpacity
-            key={route.key}
-            accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
-            onPress={onPress}
-            onLongPress={onLongPress}
-            style={$touchOpacityStyle}
-          >
-            {getTabBarIcon(route.name, isFocused)}
-          </TouchableOpacity>
-        )
-      })}
-    </View>
-  )
+export type TransactionParamList = {
+  SearchFriend: undefined
+  SendPayment: { selectedAutoId?: string; fullName?: string }
+  LastDetails: undefined
+  SendingPayment: undefined
+  PaymentDone: undefined
 }
 
 export type WalletTabParamList = {
   WalletHome: undefined
   WalletFaceId: undefined
-  WalletWelcome: undefined
+  WalletWelcome: NavigatorScreenParams<WalletWallecomeParamList>
   WalletProfile: undefined
 }
 
@@ -166,7 +45,10 @@ export function WalletNavigator() {
   return (
     <Tab.Navigator
       initialRouteName="WalletWelcome"
-      tabBar={(props) => <MyTabBar {...props} />}
+      tabBar={(props) => {
+        console.log("walletTabbar")
+        return <WalletTabBar {...props} />
+      }}
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
@@ -207,7 +89,7 @@ export function WalletNavigator() {
         }}
       />
 
-      <Tab.Screen name="WalletWelcome" component={WelcomeScreen} />
+      <Tab.Screen name="WalletWelcome" component={WalletWelcomeNavigator} />
 
       <Tab.Screen name="WalletProfile" component={ProfileScreen} />
     </Tab.Navigator>

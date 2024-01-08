@@ -15,7 +15,7 @@ import {
 } from "react-native"
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated"
 import { colors, spacing } from "../theme"
-import { iconRegistry, IconTypes } from "./Icon"
+import { IconTypes, iconRegistry } from "./Icon"
 import { Text, TextProps } from "./Text"
 
 type Variants = "checkbox" | "switch" | "radio"
@@ -259,22 +259,22 @@ function Checkbox(props: ToggleInputProps) {
   } = props
 
   const offBackgroundColor = [
-    disabled && colors.palette.neutral400,
+    disabled && colors.palette.primary600,
     status === "error" && colors.errorBackground,
     colors.palette.neutral200,
   ].filter(Boolean)[0]
 
   const outerBorderColor = [
-    disabled && colors.palette.neutral400,
+    disabled && colors.palette.primary600,
     status === "error" && colors.error,
     !on && colors.palette.neutral800,
-    colors.palette.secondary500,
+    colors.palette.primary500,
   ].filter(Boolean)[0]
 
   const onBackgroundColor = [
     disabled && colors.transparent,
     status === "error" && colors.errorBackground,
-    colors.palette.secondary500,
+    colors.palette.primary500,
   ].filter(Boolean)[0]
 
   const iconTintColor = [
@@ -568,7 +568,7 @@ const $inputOuterBase: ViewStyle = {
 }
 
 const $inputOuterVariants: Record<Variants, StyleProp<ViewStyle>> = {
-  checkbox: [$inputOuterBase, { borderRadius: 4 }],
+  checkbox: [$inputOuterBase, { borderRadius: 50 }],
   radio: [$inputOuterBase, { borderRadius: 12 }],
   switch: [$inputOuterBase, { height: 32, width: 56, borderRadius: 16, borderWidth: 0 }],
 }

@@ -1,6 +1,6 @@
-import App from "./app/app"
-import React from "react"
 import * as SplashScreen from "expo-splash-screen"
+import React from "react"
+import App from "./app/app"
 
 SplashScreen.preventAutoHideAsync()
 
