@@ -1,4 +1,4 @@
-import { NUM_OF_SHARES, generateAutoWallet, generateSssSharesFrom, recoverSeedFrom } from "@auto/sdk";
+import { NUM_OF_SHARES, generateAutoWallet, generateSssSharesFrom, recoverSeedFrom } from "@auto/backend";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { logger } from "react-native-logs";
 

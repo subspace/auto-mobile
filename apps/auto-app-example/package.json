@@ -12,7 +12,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@auto/sdk": "workspace:*",
+    "@auto/backend": "workspace:*",
     "@expo/metro-config": "0.10.7",
     "expo": "49.0.15",
     "expo-crypto-polyfills": "1.1.0",

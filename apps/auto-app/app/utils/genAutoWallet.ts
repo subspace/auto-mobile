@@ -3,7 +3,7 @@ import {
   generateAutoWallet,
   generateSssSharesFrom,
   recoverSeedFrom,
-} from "@auto/sdk"
+} from "@auto/backend"
 import { cryptoWaitReady } from "@polkadot/util-crypto"
 
 export async function genAutoWallet() {
