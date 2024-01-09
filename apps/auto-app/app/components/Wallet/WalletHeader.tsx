@@ -1,4 +1,4 @@
-import { clearAlltheShares } from "@auto/sdk"
+import { clearAlltheShares } from "@auto/backend"
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
 import React from "react"
 import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"

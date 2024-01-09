@@ -10,4 +10,4 @@ export const SIGNER_PRIVATE_KEY =
 export const NOVA_RPC_URL = 'https://nova.gemini-3g.subspace.network/ws';
 export const DID_REGISTRY_ADDRESS =
   '0x0cDE3A6F784AFd045E25226c9DaF0895f6Af20d1';
-export const MIN_BALANCE_SIGNER = '0.01';
+export const NOVA_EXPLORER_URL = 'https://nova.subspace.network';

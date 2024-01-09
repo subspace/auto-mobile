@@ -1,5 +1,5 @@
 {
-  "name": "@auto/sdk",
+  "name": "@auto/backend",
   "version": "0.0.1",
   "description": "sdk for auto app with typescript & react-native",
   "main": "lib/commonjs/index",

@@ -4,6 +4,7 @@
 
 import { ethers, BigNumber } from 'ethers';
 import { NOVA_RPC_URL, SIGNER_PRIVATE_KEY } from './constants';
+import { checkBalance } from './utils';
 
 /**
  * Sends a payment transaction on the Nova network.
@@ -17,23 +18,14 @@ import { NOVA_RPC_URL, SIGNER_PRIVATE_KEY } from './constants';
 export async function payOnNova(
   recipient: string,
   amount: BigNumber,
-  sender?: ethers.Signer
+  sender?: ethers.Wallet
 ): Promise<string> {
   // provider/client
   const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
 
   // get the signer if available
   sender = sender || new ethers.Wallet(`0x${SIGNER_PRIVATE_KEY}`, provider);
-
-  // Get the balance of the signer
-  const balance = await sender.getBalance();
-
-  const gasPrice = await provider.getGasPrice();
-
-  // Check if the signer has enough balance including required gas
-  if (balance.lt(amount.add(gasPrice.mul(21000)))) {
-    throw new Error('Insufficient balance');
-  }
+  await checkBalance(sender);
 
   // Send the transaction
   const tx = await sender.sendTransaction({
