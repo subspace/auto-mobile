@@ -13,7 +13,8 @@
 
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { Contract, Wallet, ethers, type BigNumberish } from 'ethers';
+import { Contract, Wallet, ethers } from 'ethers';
+import type { BigNumberish } from 'ethers';
 import {
   DID_REGISTRY_ADDRESS,
   NOVA_RPC_URL,
@@ -90,7 +91,7 @@ export async function generateAutoWallet(
 ): Promise<[AutoWallet, string]> {
   try {
     let seedPhrase = '',
-    autoId: string | bigint = '';
+      autoId: string | bigint = '';
 
     // client
     const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
@@ -158,11 +159,11 @@ export async function generateAutoWallet(
  */
 export async function getAutoWallet(
   numOfEvmChains: number,
-  seedPhrase?: string, 
+  seedPhrase?: string
 ): Promise<AutoWallet> {
   try {
     // recover seed phrase from SSS shares stored in local DB
-    const recoveredSeedPhrase = await recoverSeedFrom() || seedPhrase;
+    const recoveredSeedPhrase = (await recoverSeedFrom()) || seedPhrase;
     const seedString = String(recoveredSeedPhrase);
 
     // get the Auto ID (already added to the group), Subspace, EVM addresses (BIP-32) from the seed phrase.

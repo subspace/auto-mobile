@@ -1,7 +1,7 @@
 import * as SecureStorage from 'expo-secure-store';
 import { SECRET_SHARES, NUM_OF_SHARES, THRESHOLD } from './constants';
-import { ethers, Wallet, type BigNumberish } from 'ethers';
-import { MIN_BALANCE_SIGNER } from './constants';
+import { Wallet } from 'ethers';
+import type { BigNumberish } from 'ethers';
 import { SemaphoreSubgraph } from '@semaphore-protocol/data';
 
 /**
@@ -140,14 +140,18 @@ export const getSecureStoredShares = async () => {
 };
 
 export async function checkBalance(signer: Wallet) {
-  // check if sufficient balance is available
-  signer.provider?.getBalance(signer.address).then((balance) => {
-    if (balance < ethers.utils.parseEther(MIN_BALANCE_SIGNER)) {
-      throw new Error(
-        `The address ${signer.address} does not have sufficient balance to send transactions`
-      );
-    }
-  });
+  const provider = signer.provider;
+  const [gasPrice, balance] = await Promise.all([
+    provider.getGasPrice(),
+    provider.getBalance(signer.address),
+  ]);
+
+  // Check if the signer has enough required gas
+  if (balance.lt(gasPrice.mul(21000))) {
+    throw new Error(
+      `The address ${signer.address} does not have sufficient balance to send transactions`
+    );
+  }
 }
 
 // Approach-1
