@@ -1,6 +1,6 @@
 /**
  * Generate Auto wallet for an individual as unified account with
- * multiple addresses on Subspace Network (relay + domains).
+ * multiple addresses on Subspace Network (consensus + domains).
  */
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { generateAutoWallet } from '../library/wallet';

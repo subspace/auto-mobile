@@ -3,7 +3,7 @@
  * Wallet module for Auto.
  * This module creates
  * - a new wallet with a random seed phrase with
- * addresses for relay chain and EVM chains (based on BIP-32) and
+ * addresses for consensus chain and EVM chains (based on BIP-32) and
  * an Auto ID (based on Semaphore Identity).
  * - an unified account with a unique Auto ID (based on Semaphore Identity) added
  * on-chain to one of the EVM domains (where DID registry is deployed).
@@ -58,7 +58,7 @@ export function generateEvmAddressesFromSeed(
  * @returns The Subspace address generated from the seed phrase.
  */
 function generateSubspaceAddress(seedPhrase: string): string {
-  // Create a keyring instance from the seed for the Subspace relay chain
+  // Create a keyring instance from the seed for the Subspace consensus chain
   const keyring = new Keyring({ type: 'sr25519' });
 
   // Add the user to the keyring from the seed phrase
@@ -79,7 +79,7 @@ export interface AutoWallet {
 
 /**
  * Generates an AutoWallet with a unique Auto ID and performs various operations related to the wallet.
- * Random seed is used to generate the addresses for relay chain and EVM chains (based on BIP-32).
+ * Random seed is used to generate the addresses for consensus chain and EVM chains (based on BIP-32).
  * NOTE: for simplicity, considered only EVM based domains
  *
  * @param numOfEvmChains The number of EVM chains to generate addresses for.
