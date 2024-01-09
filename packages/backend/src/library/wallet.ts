@@ -15,11 +15,7 @@ import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 import { Contract, Wallet, ethers } from 'ethers';
 import type { BigNumberish } from 'ethers';
-import {
-  DID_REGISTRY_ADDRESS,
-  NOVA_RPC_URL,
-  SIGNER_PRIVATE_KEY,
-} from './constants';
+import { DID_REGISTRY_ADDRESS, NOVA_RPC_URL } from './constants';
 import { getAutoIdFromSeed } from './did';
 import { generateSssSharesFrom, recoverSeedFrom } from './recovery';
 import { checkBalance, deferTask, approach1 } from './utils';
@@ -27,6 +23,8 @@ import { checkBalance, deferTask, approach1 } from './utils';
 // Import the DidRegistry ABI from the JSON file
 import DidRegistryJson from '../../abi/DidRegistry.json';
 const abi = DidRegistryJson.abi;
+
+const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
 
 /**
  * Generates Ethereum addresses from a given seed phrase following BIP-32.
@@ -88,13 +86,10 @@ export interface AutoWallet {
  */
 export async function generateAutoWallet(
   numOfEvmChains: number
-): Promise<[AutoWallet, string]> {
+): Promise<AutoWallet> {
   try {
     let seedPhrase = '',
       autoId: string | bigint = '';
-
-    // client
-    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
 
     // TODO: Might remove later after confirming no security risk.
     // Loop until a valid Auto ID is generated
@@ -119,24 +114,6 @@ export async function generateAutoWallet(
     // store the seed phrase
     await generateSssSharesFrom(seedPhrase);
 
-    // add the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
-    const signer: Wallet = new Wallet(`0x${SIGNER_PRIVATE_KEY}`, provider);
-    await checkBalance(signer);
-
-    // instantiate the DID Registry contract instance via the address & provider
-    // contract instance
-    const didRegistryContract: Contract = new ethers.Contract(
-      DID_REGISTRY_ADDRESS,
-      abi,
-      provider
-    );
-
-    // send the transaction to add the user to the group
-    const tx = await didRegistryContract.connect(signer).register(autoId);
-
-    // wait for the transaction to be mined
-    await tx.wait();
-
     // Get the Subspace address from seed phrase
     const subspaceAddress = await deferTask(() =>
       generateSubspaceAddress(seedPhrase)
@@ -147,9 +124,57 @@ export async function generateAutoWallet(
       generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
     );
 
-    return [{ subspaceAddress, evmAddresses, autoId }, tx.hash];
+    return { subspaceAddress, evmAddresses, autoId };
   } catch (error) {
     throw new Error(`Error thrown during Auto wallet generation: ${error}`);
+  }
+}
+
+/**
+ * This function registers a user on the blockchain using a recovered seed phrase by adding
+ * the Auto ID to the group on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
+ *
+ * NOTE: The signer used here is formed just not from the recovered seed phrase,
+ * but also the path `m/44'/60'/0'/0/0` (1st index of the BIP-32 derivation path).
+ *
+ * @returns {Promise<string>} The transaction hash of the registration transaction.
+ *
+ * @throws {Error} If any error occurs during the registration process, an error is thrown with a message detailing what went wrong.
+ *
+ * @async
+ */
+export async function registerUser(): Promise<string> {
+  try {
+    // recover seed phrase from SSS shares stored in local DB
+    const recoveredSeedPhrase = await recoverSeedFrom();
+
+    // generate the Auto ID from the seed phrase
+    const autoId = getAutoIdFromSeed(recoveredSeedPhrase as string);
+
+    // instantiate the DID Registry contract instance via the address & provider
+    // contract instance
+    const didRegistryContract: Contract = new ethers.Contract(
+      DID_REGISTRY_ADDRESS,
+      abi,
+      provider
+    );
+
+    // register the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
+    const signer: Wallet = ethers.Wallet.fromMnemonic(
+      recoveredSeedPhrase as string,
+      `m/44'/60'/0'/0/0`
+    );
+    await checkBalance(signer.address, provider);
+
+    // send the transaction to register user to the group onchain
+    const tx = await didRegistryContract.connect(signer).register(autoId);
+
+    // wait for the transaction to be mined
+    await tx.wait();
+
+    return tx.hash;
+  } catch (error) {
+    throw new Error(`Error thrown during registering user: ${error}`);
   }
 }
 
@@ -166,9 +191,11 @@ export async function getAutoWallet(
     const recoveredSeedPhrase = (await recoverSeedFrom()) || seedPhrase;
     const seedString = String(recoveredSeedPhrase);
 
-    // get the Auto ID (already added to the group), Subspace, EVM addresses (BIP-32) from the seed phrase.
-    const [autoId, subspaceAddress, evmAddresses] = await Promise.all([
-      deferTask(() => getAutoIdFromSeed(seedString)),
+    // get the Auto ID (already added to the group),
+    const autoId = await deferTask(() => getAutoIdFromSeed(seedString));
+
+    // get the Subspace, EVM addresses (BIP-32) from the seed phrase.
+    const [subspaceAddress, evmAddresses] = await Promise.all([
       deferTask(() => generateSubspaceAddress(seedString)),
       deferTask(() => generateEvmAddressesFromSeed(seedString, numOfEvmChains)),
     ]);
@@ -190,9 +217,6 @@ export async function isAutoIdVerified(
   autoId: string | bigint
 ): Promise<boolean> {
   try {
-    // client
-    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
-
     const didRegistryContract: Contract = new ethers.Contract(
       DID_REGISTRY_ADDRESS,
       abi,

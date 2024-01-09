@@ -6,9 +6,6 @@ import { getAutoWallet } from '../library/wallet';
 
 async function main() {
   console.log('\n=======Retrieve Auto Wallet from seed phrase========');
-  const seedPhrase =
-    'lock frost nation imitate party medal knee cigar rough wine document immense';
-  console.log('Seed phrase:', seedPhrase);
 
   const autoWallet = await getAutoWallet(5);
   console.log('Subspace address:', autoWallet.subspaceAddress);
