@@ -13,12 +13,12 @@
 
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { Contract, Wallet, ethers } from 'ethers';
 import type { BigNumberish } from 'ethers';
+import { Contract, Wallet, ethers } from 'ethers';
 import { DID_REGISTRY_ADDRESS, NOVA_RPC_URL } from './constants';
 import { getAutoIdFromSeed } from './did';
 import { generateSssSharesFrom, recoverSeedFrom } from './recovery';
-import { checkBalance, deferTask, approach1 } from './utils';
+import { approach1, checkBalance, deferTask } from './utils';
 
 // Import the DidRegistry ABI from the JSON file
 import DidRegistryJson from '../../abi/DidRegistry.json';
@@ -103,12 +103,13 @@ export async function generateAutoWallet(
 
       // WARN: might take some time to find the unique Auto ID
       // Check for a valid/unique Auto ID
-      const isAutoIdPreExist = await isAutoIdVerified(autoId);
+      // const isAutoIdPreExist = await isAutoIdVerified(autoId);
 
-      if (!isAutoIdPreExist) {
-        // break the loop if the Auto ID doesn't pre-exist onchain
-        break;
-      }
+      // if (!isAutoIdPreExist) {
+      // break the loop if the Auto ID doesn't pre-exist onchain
+      // break;
+      // }
+      break;
     }
 
     // store the seed phrase
