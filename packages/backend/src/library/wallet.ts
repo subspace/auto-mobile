@@ -114,15 +114,11 @@ export async function generateAutoWallet(
     // store the seed phrase
     await generateSssSharesFrom(seedPhrase);
 
-    // Get the Subspace address from seed phrase
-    const subspaceAddress = await deferTask(() =>
-      generateSubspaceAddress(seedPhrase)
-    );
-
-    // Get the EVM addresses from the seed phrase (BIP-32)
-    const evmAddresses = await deferTask(() =>
-      generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)
-    );
+    // Get the Subspace address, the EVM addresses from the seed phrase (BIP-32)
+    const [subspaceAddress, evmAddresses] = await Promise.all([
+      deferTask(() => generateSubspaceAddress(seedPhrase)),
+      deferTask(() => generateEvmAddressesFromSeed(seedPhrase, numOfEvmChains)),
+    ]);
 
     return { subspaceAddress, evmAddresses, autoId };
   } catch (error) {
