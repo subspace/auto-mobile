@@ -161,6 +161,7 @@ function getRandomByte(): number {
 }
 
 function getNonZeroRandomByte(): number {
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const byte = getRandomByte();
     if (byte > 0) {
@@ -221,6 +222,7 @@ function newCoordinates(): Readonly<Uint8Array> {
 const AssertArgument = {
   instanceOf(
     object: number | Uint8Array | Uint8Array[],
+    // eslint-disable-next-line @typescript-eslint/ban-types
     constructor: Function,
     message: string
   ) {
