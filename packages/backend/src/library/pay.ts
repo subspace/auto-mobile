@@ -1,41 +1,67 @@
 /**
  * Payment module for Auto.
+ * Here, the user who has already registered on-chain can send a payment transaction on Nova & Consensus chain.
  */
 
-import { ethers, BigNumber } from 'ethers';
-import { NOVA_RPC_URL, SIGNER_PRIVATE_KEY } from './constants';
+import { ethers, BigNumber, Wallet } from 'ethers';
+import { NOVA_RPC_URL } from './constants';
 import { checkBalance } from './utils';
+import { recoverSeedFrom } from './recovery';
+import { isAutoIdVerified } from './wallet';
+import { getAutoIdFromSeed } from './did';
 
 /**
- * Sends a payment transaction on the Nova network.
+ * Registered user sends a payment transaction on the Nova network.
+ * NOTE: The pre-requisites are:
+ *  - The sender must have already registered their Auto ID on-chain.
+ *  - The sender must have sufficient balance to send the payment.
  *
  * @param recipient - The address of the recipient.
  * @param amount - The amount (in Wei) of the payment.
- * @param sender - (Optional) The signer of the transaction. If not provided, a new signer will be created using the private key.
  * @returns A promise that resolves to the transaction hash.
- * @throws An error if the sender has insufficient balance.
+ * @throws An error if the sender is not registered on-chain or has insufficient balance.
  */
 export async function payOnNova(
   recipient: string,
-  amount: BigNumber,
-  sender?: ethers.Wallet
+  amount: BigNumber
 ): Promise<string> {
-  // provider/client
-  const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+  try {
+    // recover seed phrase from SSS shares stored in local DB
+    const recoveredSeedPhrase = await recoverSeedFrom();
 
-  // get the signer if available
-  sender = sender || new ethers.Wallet(`0x${SIGNER_PRIVATE_KEY}`, provider);
-  await checkBalance(sender);
+    // generate the Auto ID from the seed phrase
+    const autoId = getAutoIdFromSeed(recoveredSeedPhrase as string);
 
-  // Send the transaction
-  const tx = await sender.sendTransaction({
-    to: recipient,
-    value: amount,
-  });
+    // Ensure the user had already registered
+    if (!(await isAutoIdVerified(autoId))) {
+      throw new Error(`Auto ID ${autoId} is not verified`);
+    }
 
-  // Wait for the transaction to be mined
-  await tx.wait();
+    // client
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
 
-  // Return the transaction hash
-  return tx.hash;
+    // get the sender (from Nova chain) if available with the recovered seed phrase
+    // & derivation path (1st index).
+    // NOTE: The derivation path indicates the index of the chain.
+    // So, accordingly the derivation path has been used.
+    const sender: Wallet = ethers.Wallet.fromMnemonic(
+      recoveredSeedPhrase as string,
+      `m/44'/60'/0'/0/0`
+    );
+    await checkBalance(sender.address, provider);
+
+    // Send the transaction
+    const tx = await sender.sendTransaction({
+      to: recipient,
+      value: amount,
+    });
+
+    // Wait for the transaction to be mined
+    await tx.wait();
+
+    // Return the transaction hash
+    return tx.hash;
+  } catch (error) {
+    throw new Error(`Error thrown during paying on Nova: ${error}`);
+  }
 }

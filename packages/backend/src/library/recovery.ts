@@ -50,10 +50,9 @@ export async function generateSssSharesFrom(
 /**
  * Recover seed phrase from SSS shares
  *
- * @param shares The SSS shares at least {THRESHOLD} shares
- * @returns The reconstructed seed phrase as ASCII string
+ * @returns {Promise<string>} The promise that resolved to a reconstructed seed phrase as ASCII string
  */
-export async function recoverSeedFrom(): Promise<string | undefined> {
+export async function recoverSeedFrom(): Promise<string> {
   try {
     const shares = await getSecureStoredShares();
 
@@ -69,6 +68,6 @@ export async function recoverSeedFrom(): Promise<string | undefined> {
 
     return seedPhrase;
   } catch {
-    return undefined;
+    throw new Error('Error in recovering seed phrase, maybe not stored yet');
   }
 }

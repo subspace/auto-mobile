@@ -1,5 +1,5 @@
 /**
- * Example showing how to pay to an address.
+ * Example showing how to pay to an address on Nova.
  */
 
 import { NOVA_EXPLORER_URL } from '../library/constants';
