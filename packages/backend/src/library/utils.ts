@@ -1,8 +1,9 @@
 import * as SecureStorage from 'expo-secure-store';
 import { SECRET_SHARES, NUM_OF_SHARES, THRESHOLD } from './constants';
 import { ethers } from 'ethers';
-import type { BigNumberish } from 'ethers';
+import type { BigNumber, BigNumberish, Wallet } from 'ethers';
 import { SemaphoreSubgraph } from '@semaphore-protocol/data';
+import { recoverSeedFrom } from './recovery';
 
 /**
  * Convert string to Uint8Array
@@ -139,6 +140,7 @@ export const getSecureStoredShares = async () => {
   return resolvedResult.filter((result) => !!result).flat();
 };
 
+// Check if the signer has enough balance to send transactions
 export async function checkBalance(
   user: string,
   provider: ethers.providers.JsonRpcProvider
@@ -153,6 +155,52 @@ export async function checkBalance(
     throw Error(
       `The address ${user} does not have sufficient balance to send transactions`
     );
+  }
+}
+
+/**
+ * Retrieves the balance of a specified user address or the address generated from the recovered seed phrase.
+ *
+ * @param {ethers.providers.JsonRpcProvider} provider - The JSON-RPC provider to use for the operation.
+ * @param {string} [userAddress] - The address of the user to retrieve the balance for. If not provided, the function will attempt to recover the seed phrase and derive the address from it.
+ *
+ * @returns {Promise<BigNumber>} - A promise that resolves to the balance of the specified address.
+ *
+ * @throws {Error} - Throws an error if the seed phrase cannot be recovered or if the address derived from the seed phrase is not found.
+ */
+export async function viewNovaBalanceOf(
+  provider: ethers.providers.JsonRpcProvider,
+  userAddress?: string
+): Promise<BigNumber> {
+  try {
+    // If userAddress is provided, directly get the balance and return
+    if (userAddress) {
+      const balance = await provider.getBalance(userAddress);
+      return balance;
+    }
+
+    // If userAddress is not provided, proceed with existing logic
+    const recoveredSeedPhrase = await recoverSeedFrom();
+    if (!recoveredSeedPhrase) {
+      throw Error('ViewBalanceOf: Seed phrase not found!');
+    }
+
+    // get the signer & then address (from Nova chain) if available with the recovered seed phrase
+    const myWallet: Wallet = ethers.Wallet.fromMnemonic(
+      recoveredSeedPhrase as string,
+      `m/44'/60'/0'/0/0`
+    ).connect(provider);
+
+    if (myWallet.address === '0') {
+      throw new Error(
+        `${provider.network.name} Address not found for the recovered seed phrase`
+      );
+    }
+
+    const balance = await provider.getBalance(myWallet.address);
+    return balance;
+  } catch (error) {
+    throw new Error(`Error thrown during viewing balance: ${error}`);
   }
 }
 
