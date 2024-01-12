@@ -6,12 +6,12 @@ import { recoverSeedFrom } from './recovery';
 import { getAutoIdFromSeed } from './did';
 
 // Define the types for the response
-type BigNumberResponse = {
+interface BigNumberResponse {
   type: string;
   hex: string;
-};
+}
 
-type TxResponse = {
+interface TxResponse {
   type: number;
   chainId: number;
   nonce: number;
@@ -29,12 +29,12 @@ type TxResponse = {
   s: string;
   from: string;
   confirmations: number;
-};
+}
 
-type ApiResponse = {
+interface ApiResponse {
   message: string;
   txResponse: TxResponse;
-};
+}
 
 /**
  * Any (registered/non-registered) user request faucet tokens on the Nova network.
