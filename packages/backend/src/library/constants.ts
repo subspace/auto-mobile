@@ -13,3 +13,5 @@ export const NOVA_FAUCET_RPC_URL =
   'https://subspacefaucet.com/api/requestTokens';
 export const NOVA_EXPLORER_URL = 'https://nova.subspace.network';
 export const PROVIDER = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+export const SENDERS_TREASURY_ADDRESS =
+  '0xC74aF26d9195c9c521D47BD305e1119d10139003';
