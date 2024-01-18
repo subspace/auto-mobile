@@ -164,7 +164,7 @@ export async function getNextPayIdFor(
       }
     }
 
-    if (!payId) {
+    if (!payId.toNumber()) {
       throw new Error(`No payment found for ${address} with status ${status}`);
     }
 
