@@ -98,14 +98,14 @@ export async function requestPay(
 }
 
 // copied from solidity contract
+// variants start from 1.
 enum PayRequestStatus {
-  UNSET,
-  REQUESTED,
+  REQUESTED = 1,
   SIGNED,
   DONE,
 }
 interface PayRequest {
-  status: PayRequestStatus; // 0: unset, 1: requested payment, 2: signed requested payment, 3: payment done
+  status: PayRequestStatus; // 1: requested payment, 2: signed requested payment, 3: payment done
   sender: string;
   receiver: string;
   amount: BigNumber;
