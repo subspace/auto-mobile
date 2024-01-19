@@ -115,8 +115,8 @@ const $searchResultContainer: ViewStyle = {
   marginTop: 12,
   backgroundColor: "#e6e3f7",
   borderRadius: 16,
-  height: 400,
-  maxHeight: 400,
+  height: "65%",
+  maxHeight: "65%",
   paddingVertical: 12,
   paddingHorizontal: 20,
 }

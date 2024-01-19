@@ -1,3 +1,6 @@
+// Import the the ethers shims (**BEFORE** ethers)
+import '@ethersproject/shims';
+
 /**
  * Seed Recovery using Threshold schemes like Shamir's Secret Sharing (SSS)
  * that breaks a seed phrase into shares and distributes them to either

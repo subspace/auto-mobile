@@ -1,3 +1,4 @@
+import { genAutoWallet } from "@auto/backend"
 import { observer } from "mobx-react-lite"
 import * as React from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
@@ -6,9 +7,7 @@ import { ProgressBar } from "../components/ProgressBar/ProgressBar"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { spacing } from "../theme"
-import { genAutoWallet } from "../utils/genAutoWallet"
 import { useAsyncIncrementalNumber } from "../utils/useAsyncIncrementalNumber"
-
 interface SetupAutoIdProps extends AppStackScreenProps<"SetupAutoId"> {}
 
 export const SetupAutoIdScreen = observer(function SetupAutoId(props: SetupAutoIdProps) {

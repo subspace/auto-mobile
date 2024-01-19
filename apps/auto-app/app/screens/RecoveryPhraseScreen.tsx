@@ -21,7 +21,6 @@ export const RecoveryPhraseScreen = observer(function RecoveryPhraseScreen(
       Alert.alert("Please make sure you've filled all the inputs")
       return
     }
-    // console.log("words", recoveryStore.seedPhrase, recoveryStore.validationError)
 
     props.navigation.navigate("Wallet", { screen: "WalletWelcome", params: { screen: "Welcome" } })
   }, [recoveryStore.seedPhrase, recoveryStore.validationError])

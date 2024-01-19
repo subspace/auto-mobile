@@ -1,29 +1,11 @@
 import { observer } from "mobx-react-lite"
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { Button, Screen, Text } from "../components"
 import { WalletHeader } from "../components/Wallet/WalletHeader"
 import { useStores } from "../models"
 import { WalletWelcomeStackScreenProps } from "../navigators/WalletWelcomeNavigator"
 import { colors, spacing } from "../theme"
-
-const currencies = [
-  {
-    cryptoCurrency: "BTC",
-    cryptoAmount: 1,
-    dollarAmount: "40,000",
-  },
-  {
-    cryptoCurrency: "BNB",
-    cryptoAmount: 3,
-    dollarAmount: "600",
-  },
-  {
-    cryptoCurrency: "ETH",
-    cryptoAmount: 10,
-    dollarAmount: "20,000",
-  },
-]
 
 export interface WalletWelcomeScreenProps extends WalletWelcomeStackScreenProps<"Welcome"> {}
 export const WalletWelcomeScreen = observer(function WelcomeScreen(
@@ -32,6 +14,7 @@ export const WalletWelcomeScreen = observer(function WelcomeScreen(
   const { navigation } = props
   const {
     authenticationStore: { fullname },
+    balance,
   } = useStores()
 
   const makeTransactionHandler = useCallback(() => {
@@ -43,6 +26,11 @@ export const WalletWelcomeScreen = observer(function WelcomeScreen(
   const onCurrencySelect = (idx: number) => () => {
     setCurrentIndex(idx)
   }
+
+  useEffect(() => {
+    balance.fetchCurerncies()
+  }, [])
+
   return (
     <Screen header={<WalletHeader />} preset="auto" safeAreaEdges={["top", "bottom"]}>
       <View style={$container}>
@@ -55,32 +43,28 @@ export const WalletWelcomeScreen = observer(function WelcomeScreen(
           <View style={$balanceRow}>
             <Text preset="subheading">$ </Text>
             <Text preset="heading" style={$balanceAmountStyle}>
-              {currencies[currencyIndex].dollarAmount}
+              {balance.currencies[currencyIndex]?.amountInDollar}
             </Text>
           </View>
           <View style={$balanceDivider} />
         </View>
-        {currencies.length ? (
+        {balance.currencies.length ? (
           <View style={$currenciesContainer}>
             <Text preset="subheading" size="lg" style={$currencyTitle}>
-              Ethereum Chain
+              {balance.currencies[currencyIndex]?.title}
             </Text>
             <View style={$currenciesWrapper}>
-              <TouchableOpacity style={$currencyContainer} onPress={onCurrencySelect(0)}>
-                <Text preset="bold" style={$currentText}>
-                  3 BNB - $600
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={$currencyContainer} onPress={onCurrencySelect(1)}>
-                <Text preset="bold" style={$currentText}>
-                  3 BTC - $40,000
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={$currencyContainer} onPress={onCurrencySelect(2)}>
-                <Text preset="bold" style={$currentText}>
-                  10 ETH - $20,000
-                </Text>
-              </TouchableOpacity>
+              {balance.currencies?.map((currency, index) => (
+                <TouchableOpacity
+                  key={currency.id}
+                  style={$currencyContainer}
+                  onPress={onCurrencySelect(index)}
+                >
+                  <Text preset="bold" style={$currentText}>
+                    {currency.amount} {currency.currencyLabel} - ${currency.amountInDollar}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         ) : (
@@ -111,16 +95,16 @@ const $container: ViewStyle = {
 }
 
 const $section: ViewStyle = {
-  marginTop: 48,
-  marginVertical: 48,
+  marginTop: "12%",
+  // marginVertical: "10%",
 }
 
 const $balanceSection: ViewStyle = {
-  marginTop: 48,
+  marginTop: "12%",
 }
 
 const $emptyWalletSection: ViewStyle = {
-  marginVertical: 48,
+  marginVertical: "12%",
   justifyContent: "center",
   alignItems: "center",
 }
@@ -200,5 +184,5 @@ const $currentText: TextStyle = {
 }
 
 const $currenciesContainer: ViewStyle = {
-  marginBottom: 48,
+  marginBottom: "8%",
 }

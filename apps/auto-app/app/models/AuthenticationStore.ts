@@ -9,6 +9,7 @@ export const AuthenticationStoreModel = types
     subspaceAddress: types.maybe(types.string),
     evmAddresses: types.array(types.string),
     autoId: types.maybe(types.string),
+    txHash: types.maybe(types.string),
   })
   .actions(withSetPropAction)
   .views((store) => ({
@@ -19,6 +20,9 @@ export const AuthenticationStoreModel = types
       if (store.fullname?.length === 0) return "can't be blank"
       if (store.fullname && store.fullname?.length < 6) return "must be at least 6 characters"
       return ""
+    },
+    get isRegistered() {
+      return !!store.txHash
     },
   }))
   .actions((store) => ({
@@ -40,6 +44,9 @@ export const AuthenticationStoreModel = types
     },
     setFullname(value: string) {
       store.fullname = value
+    },
+    setTxHash(value: string) {
+      store.txHash = value
     },
     logout() {
       store.autoId = undefined
