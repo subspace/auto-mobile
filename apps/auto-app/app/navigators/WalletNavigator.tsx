@@ -46,7 +46,6 @@ export function WalletNavigator() {
     <Tab.Navigator
       initialRouteName="WalletWelcome"
       tabBar={(props) => {
-        console.log("walletTabbar")
         return <WalletTabBar {...props} />
       }}
       screenOptions={{

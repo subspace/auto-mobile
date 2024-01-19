@@ -1,9 +1,12 @@
+// Import the the ethers shims (**BEFORE** ethers)
+import '@ethersproject/shims';
+
 /**
  * Payment module for Auto.
  * Here, the user who has already registered on-chain can send/request a payment transaction on Nova & Consensus chain.
  */
 
-import { ethers, BigNumber, Wallet, Contract } from 'ethers';
+import { BigNumber, Contract, Wallet, ethers } from 'ethers';
 import { NOVA_RPC_URL, SENDERS_TREASURY_ADDRESS } from './constants';
 import { checkBalance, recoverAndValidateAutoId } from './utils';
 
@@ -26,7 +29,10 @@ export async function payOnNova(
     const { recoveredSeedPhrase } = await recoverAndValidateAutoId();
 
     // client
-    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+    const provider = new ethers.providers.JsonRpcProvider({
+      url: NOVA_RPC_URL,
+      skipFetchSetup: true,
+    });
 
     // get the sender (from Nova chain) if available with the recovered seed phrase
     // & derivation path (1st index).

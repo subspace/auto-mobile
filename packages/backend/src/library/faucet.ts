@@ -1,3 +1,6 @@
+// Import the the ethers shims (**BEFORE** ethers)
+import '@ethersproject/shims';
+
 /**
  * Faucet library for the backend.
  */

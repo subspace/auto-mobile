@@ -2,6 +2,9 @@
  * DID module
  */
 
+// Import the the ethers shims (**BEFORE** ethers)
+import '@ethersproject/shims';
+
 import { Identity } from '@semaphore-protocol/identity';
 
 /**

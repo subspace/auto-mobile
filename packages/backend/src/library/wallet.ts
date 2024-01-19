@@ -1,3 +1,6 @@
+// Import the the ethers shims (**BEFORE** ethers)
+import '@ethersproject/shims';
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Wallet module for Auto.
@@ -26,10 +29,13 @@ import {
 } from './utils';
 
 // Import the DidRegistry ABI from the JSON file
-import DidRegistryJson from '../../abi/DidRegistry.json';
+import DidRegistryJson from '../abi/DidRegistry.json';
 const abi = DidRegistryJson.abi;
 
-const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+const provider = new ethers.providers.JsonRpcProvider({
+  url: NOVA_RPC_URL,
+  skipFetchSetup: true,
+});
 
 /**
  * Generates Ethereum addresses from a given seed phrase following BIP-32.
@@ -160,7 +166,10 @@ export async function registerUser(): Promise<string> {
       recoveredSeedPhrase,
       `m/44'/60'/0'/0/0`
     ).connect(provider);
+
+    console.log('registerUser signer', signer);
     await checkBalance(signer.address, provider);
+    console.log('registerUser checkBalance', signer);
 
     // instantiate the DID Registry contract instance via the address & provider
     // contract instance
@@ -170,8 +179,10 @@ export async function registerUser(): Promise<string> {
       provider
     );
 
+    console.log('registerUser didRegistryContract', didRegistryContract);
     // send the transaction to register user to the group onchain
     const tx = await didRegistryContract.connect(signer).register(autoId);
+    console.log('registerUser tx', tx);
 
     // wait for the transaction to be mined
     await tx.wait();

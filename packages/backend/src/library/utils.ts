@@ -1,8 +1,11 @@
-import * as SecureStorage from 'expo-secure-store';
-import { SECRET_SHARES, NUM_OF_SHARES, THRESHOLD } from './constants';
-import { ethers } from 'ethers';
-import type { BigNumber, BigNumberish, Wallet } from 'ethers';
+// Import the the ethers shims (**BEFORE** ethers)
+import '@ethersproject/shims';
+
 import { SemaphoreSubgraph } from '@semaphore-protocol/data';
+import type { BigNumber, BigNumberish, Wallet } from 'ethers';
+import { ethers } from 'ethers';
+import * as SecureStorage from 'expo-secure-store';
+import { NUM_OF_SHARES, SECRET_SHARES, THRESHOLD } from './constants';
 import { recoverSeedFrom } from './recovery';
 import { getAutoIdFromSeed } from './did';
 
@@ -146,10 +149,12 @@ export async function checkBalance(
   user: string,
   provider: ethers.providers.JsonRpcProvider
 ) {
+  console.log('checkBalance');
   const [gasPrice, balance] = await Promise.all([
     provider.getGasPrice(),
     provider.getBalance(user),
   ]);
+  console.log('checkBalance after');
 
   // Check if the signer has enough required gas
   if (balance.lt(gasPrice.mul(21000))) {
@@ -157,6 +162,7 @@ export async function checkBalance(
       `The address ${user} does not have sufficient balance to send transactions`
     );
   }
+  console.log('checkBalance donne');
 }
 
 /**

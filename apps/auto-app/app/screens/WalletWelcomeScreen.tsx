@@ -31,8 +31,6 @@ export const WalletWelcomeScreen = observer(function WelcomeScreen(
     balance.fetchCurerncies()
   }, [])
 
-  console.log({ balance })
-
   return (
     <Screen header={<WalletHeader />} preset="auto" safeAreaEdges={["top", "bottom"]}>
       <View style={$container}>

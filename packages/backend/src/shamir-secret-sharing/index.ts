@@ -271,8 +271,6 @@ export async function split(
     'secret cannot be empty'
   );
 
-  console.log('secret must be a non-empty Uint8Array after');
-
   // shares must be a number in the range [2, 256)
   AssertArgument.instanceOf(shares, Number, 'shares must be a number');
   AssertArgument.inRange(
@@ -281,7 +279,6 @@ export async function split(
     256,
     'shares must be at least 2 and at most 255'
   );
-  console.log('shares must be a number after');
 
   // threshold must be a number in the range [2, 256)
   AssertArgument.instanceOf(threshold, Number, 'threshold must be a number');
@@ -292,21 +289,17 @@ export async function split(
     'threshold must be at least 2 and at most 255'
   );
 
-  console.log('threshold must be a number after');
-
   // total number of shares must be greater than or equal to the required threshold
   AssertArgument.greaterThanOrEqualTo(
     shares,
     threshold,
     'shares cannot be less than threshold'
   );
-  console.log('shares cannot be less than threshold after');
 
   const result: Uint8Array[] = [];
   const secretLength = secret.byteLength;
   const xCoordinates = newCoordinates();
 
-  console.log('xCoordinates', xCoordinates);
   for (let i = 0; i < shares; i++) {
     const share = new Uint8Array(secretLength + 1);
     share[secretLength] = xCoordinates[i]!;
