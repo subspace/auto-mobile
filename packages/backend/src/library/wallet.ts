@@ -102,6 +102,7 @@ export async function generateAutoWallet(
       autoId = await deferTask(() => getAutoIdFromSeed(seedPhrase));
 
       // WARN: might take some time to find the unique Auto ID
+      // FIXME: Issue: https://github.com/subspace/auto-mobile/issues/28
       // Check for a valid/unique Auto ID
       // const isAutoIdPreExist = await isAutoIdVerified(autoId);
 
@@ -148,6 +149,18 @@ export async function registerUser(): Promise<string> {
     // generate the Auto ID from the seed phrase
     const autoId = getAutoIdFromSeed(recoveredSeedPhrase as string);
 
+    // register the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
+    // get the signer (from Nova chain) if available with the recovered seed phrase
+    // & derivation path (1st index).
+    // NOTE: The derivation path indicates the index of the chain.
+    // So, accordingly the derivation path has been used.
+    // Also, connect the signer to the provider
+    const signer: Wallet = ethers.Wallet.fromMnemonic(
+      recoveredSeedPhrase as string,
+      `m/44'/60'/0'/0/0`
+    ).connect(provider);
+    await checkBalance(signer.address, provider);
+
     // instantiate the DID Registry contract instance via the address & provider
     // contract instance
     const didRegistryContract: Contract = new ethers.Contract(
@@ -155,13 +168,6 @@ export async function registerUser(): Promise<string> {
       abi,
       provider
     );
-
-    // register the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
-    const signer: Wallet = ethers.Wallet.fromMnemonic(
-      recoveredSeedPhrase as string,
-      `m/44'/60'/0'/0/0`
-    );
-    await checkBalance(signer.address, provider);
 
     // send the transaction to register user to the group onchain
     const tx = await didRegistryContract.connect(signer).register(autoId);

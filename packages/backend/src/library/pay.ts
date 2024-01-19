@@ -30,12 +30,14 @@ export async function payOnNova(
     const recoveredSeedPhrase = await recoverSeedFrom();
 
     // generate the Auto ID from the seed phrase
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const autoId = getAutoIdFromSeed(recoveredSeedPhrase as string);
 
     // Ensure the user had already registered
-    if (!(await isAutoIdVerified(autoId))) {
-      throw new Error(`Auto ID ${autoId} is not verified`);
-    }
+    // FIXME: Issue: https://github.com/subspace/auto-mobile/issues/28
+    // if (!(await isAutoIdVerified(autoId))) {
+    //   throw new Error(`Auto ID ${autoId} is not verified`);
+    // }
 
     // client
     const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
@@ -47,7 +49,7 @@ export async function payOnNova(
     const sender: Wallet = ethers.Wallet.fromMnemonic(
       recoveredSeedPhrase as string,
       `m/44'/60'/0'/0/0`
-    );
+    ).connect(provider);
     await checkBalance(sender.address, provider);
 
     // Send the transaction
