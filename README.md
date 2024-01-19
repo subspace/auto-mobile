@@ -2,7 +2,7 @@
 
 ## Description
 
-This project is a monorepo that has built-in the auto backend and also include the `auto-app`
+This project is a monorepo that has built-in `auto-backend` and also includes the `auto-app`".
 
 This Project contains a shared package named `@auto/backend` and the `@subpace/auto-app`
 
@@ -12,14 +12,14 @@ The `auto-app` is built in top of [Expo Go](https://expo.dev/)
 
 ### Node & Watchman
 
-We recommend installing Node and Watchman using Homebrew. Run the following commands in a Terminal after installing Homebrew:
+It is recommended to install Node and Watchman using Homebrew on macOS. Run the following commands in a terminal after installing Homebrew:
 ```
 brew install node
 brew install watchman
 ```
 If you have already installed Node on your system, make sure it is Node 18.
 
-[Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching changes in the filesystem. It is highly recommended you install it for better performance.
+[Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching changes in the filesystem. It is highly recommended to install it for better performance.
 
 ### iOS
 
