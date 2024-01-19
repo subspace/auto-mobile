@@ -2,8 +2,7 @@
  * Faucet library for the backend.
  */
 import { NOVA_FAUCET_RPC_URL } from './constants';
-import { recoverSeedFrom } from './recovery';
-import { getAutoIdFromSeed } from './did';
+import { recoverAndValidateAutoId } from './utils';
 
 // Define the types for the response
 interface BigNumberResponse {
@@ -56,18 +55,7 @@ export async function requestFaucetTokens(
   });
 
   try {
-    // recover seed phrase from SSS shares stored in local DB
-    const recoveredSeedPhrase = await recoverSeedFrom();
-
-    // generate the Auto ID from the seed phrase
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const autoId = getAutoIdFromSeed(recoveredSeedPhrase as string);
-
-    // Ensure the user had already registered
-    // FIXME: Issue: https://github.com/subspace/auto-mobile/issues/28
-    // if (!(await isAutoIdVerified(autoId))) {
-    //   throw new Error(`Auto ID ${autoId} is not verified`);
-    // }
+    await recoverAndValidateAutoId();
 
     const response = await fetch(NOVA_FAUCET_RPC_URL, {
       method: 'GET',

@@ -18,7 +18,12 @@ import { Contract, Wallet, ethers } from 'ethers';
 import { DID_REGISTRY_ADDRESS, NOVA_RPC_URL } from './constants';
 import { getAutoIdFromSeed } from './did';
 import { generateSssSharesFrom, recoverSeedFrom } from './recovery';
-import { approach1, checkBalance, deferTask } from './utils';
+import {
+  approach1,
+  checkBalance,
+  deferTask,
+  recoverAndValidateAutoId,
+} from './utils';
 
 // Import the DidRegistry ABI from the JSON file
 import DidRegistryJson from '../../abi/DidRegistry.json';
@@ -143,11 +148,7 @@ export async function generateAutoWallet(
  */
 export async function registerUser(): Promise<string> {
   try {
-    // recover seed phrase from SSS shares stored in local DB
-    const recoveredSeedPhrase = await recoverSeedFrom();
-
-    // generate the Auto ID from the seed phrase
-    const autoId = getAutoIdFromSeed(recoveredSeedPhrase as string);
+    const { recoveredSeedPhrase, autoId } = await recoverAndValidateAutoId();
 
     // register the Auto ID on-chain to one of the EVM domains (where DID registry is deployed) i.e. Nova domain
     // get the signer (from Nova chain) if available with the recovered seed phrase
@@ -156,7 +157,7 @@ export async function registerUser(): Promise<string> {
     // So, accordingly the derivation path has been used.
     // Also, connect the signer to the provider
     const signer: Wallet = ethers.Wallet.fromMnemonic(
-      recoveredSeedPhrase as string,
+      recoveredSeedPhrase,
       `m/44'/60'/0'/0/0`
     ).connect(provider);
     await checkBalance(signer.address, provider);

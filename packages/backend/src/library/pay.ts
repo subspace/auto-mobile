@@ -1,14 +1,11 @@
 /**
  * Payment module for Auto.
- * Here, the user who has already registered on-chain can send a payment transaction on Nova & Consensus chain.
+ * Here, the user who has already registered on-chain can send/request a payment transaction on Nova & Consensus chain.
  */
 
-import { ethers, BigNumber, Wallet } from 'ethers';
-import { NOVA_RPC_URL } from './constants';
-import { checkBalance } from './utils';
-import { recoverSeedFrom } from './recovery';
-import { isAutoIdVerified } from './wallet';
-import { getAutoIdFromSeed } from './did';
+import { ethers, BigNumber, Wallet, Contract } from 'ethers';
+import { NOVA_RPC_URL, SENDERS_TREASURY_ADDRESS } from './constants';
+import { checkBalance, recoverAndValidateAutoId } from './utils';
 
 /**
  * Registered user sends a payment transaction on the Nova network.
@@ -26,18 +23,7 @@ export async function payOnNova(
   amount: BigNumber
 ): Promise<string> {
   try {
-    // recover seed phrase from SSS shares stored in local DB
-    const recoveredSeedPhrase = await recoverSeedFrom();
-
-    // generate the Auto ID from the seed phrase
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const autoId = getAutoIdFromSeed(recoveredSeedPhrase as string);
-
-    // Ensure the user had already registered
-    // FIXME: Issue: https://github.com/subspace/auto-mobile/issues/28
-    // if (!(await isAutoIdVerified(autoId))) {
-    //   throw new Error(`Auto ID ${autoId} is not verified`);
-    // }
+    const { recoveredSeedPhrase } = await recoverAndValidateAutoId();
 
     // client
     const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
@@ -65,5 +51,198 @@ export async function payOnNova(
     return tx.hash;
   } catch (error) {
     throw new Error(`Error thrown during paying on Nova: ${error}`);
+  }
+}
+
+// Import the DidRegistry ABI from the JSON file
+import SendersTreasuryJson from '../../abi/SendersTreasury.json';
+const abi = SendersTreasuryJson.abi;
+
+export async function requestPay(
+  sender: string,
+  amount: BigNumber
+): Promise<string> {
+  try {
+    const { recoveredSeedPhrase } = await recoverAndValidateAutoId();
+
+    // client
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+
+    // get the sender (from Nova chain) if available with the recovered seed phrase
+    // & derivation path (1st index).
+    const signerWallet: Wallet = ethers.Wallet.fromMnemonic(
+      recoveredSeedPhrase,
+      `m/44'/60'/0'/0/0`
+    ).connect(provider);
+    await checkBalance(signerWallet.address, provider);
+
+    const sendersTreasuryContract: Contract = new ethers.Contract(
+      SENDERS_TREASURY_ADDRESS,
+      abi,
+      provider
+    );
+
+    // Send the transaction for requesting pay
+    const tx = await sendersTreasuryContract
+      .connect(signerWallet)
+      .requestPay(sender, amount);
+
+    // Wait for the transaction to be mined
+    await tx.wait();
+
+    // Return the transaction hash
+    return tx.hash;
+  } catch (error) {
+    throw new Error(`Error thrown during paying on Nova: ${error}`);
+  }
+}
+
+// copied from solidity contract
+// variants start from 1.
+enum PayRequestStatus {
+  REQUESTED = 1,
+  SIGNED,
+  DONE,
+}
+interface PayRequest {
+  status: PayRequestStatus; // 1: requested payment, 2: signed requested payment, 3: payment done
+  sender: string;
+  receiver: string;
+  amount: BigNumber;
+  signature: string;
+}
+
+// get the requested pay ids for sender/receiver
+export async function getRequestedPayIds(
+  senderOrReceiver: string
+): Promise<BigNumber[]> {
+  try {
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+
+    const sendersTreasuryContract: Contract = new ethers.Contract(
+      SENDERS_TREASURY_ADDRESS,
+      abi,
+      provider
+    );
+
+    const requestedPayIds: BigNumber[] =
+      await sendersTreasuryContract.getRequestedPayIdsOf(senderOrReceiver);
+
+    return requestedPayIds;
+  } catch (error) {
+    throw new Error(`Error thrown during getting requested pay ids: ${error}`);
+  }
+}
+
+// get the next requested pay id for sender/receiver with given status
+export async function getNextPayIdFor(
+  address: string,
+  status: PayRequestStatus
+): Promise<BigNumber> {
+  try {
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+
+    const sendersTreasuryContract: Contract = new ethers.Contract(
+      SENDERS_TREASURY_ADDRESS,
+      abi,
+      provider
+    );
+
+    const requestedPayIds: BigNumber[] =
+      await sendersTreasuryContract.getRequestedPayIdsOf(address);
+
+    let payId: BigNumber = BigNumber.from(0);
+
+    // get the next pay id that matches with the status code
+    for (const pid of requestedPayIds) {
+      const payRequest: PayRequest =
+        await sendersTreasuryContract.getPaymentRequest(pid);
+
+      if (payRequest.status === status) {
+        payId = pid;
+        break;
+      }
+    }
+
+    if (!payId.toNumber()) {
+      throw new Error(`No payment found for ${address} with status ${status}`);
+    }
+
+    return payId;
+  } catch (error) {
+    throw new Error(`Error thrown during getting pay ids: ${error}`);
+  }
+}
+
+export async function authorizePay(requestId: BigNumber): Promise<string> {
+  try {
+    const { recoveredSeedPhrase } = await recoverAndValidateAutoId();
+
+    // client
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+
+    // get the sender (from Nova chain) if available with the recovered seed phrase
+    // & derivation path (1st index).
+    const signerWallet: Wallet = ethers.Wallet.fromMnemonic(
+      recoveredSeedPhrase,
+      `m/44'/60'/0'/0/0`
+    ).connect(provider);
+    await checkBalance(signerWallet.address, provider);
+
+    const sendersTreasuryContract: Contract = new ethers.Contract(
+      SENDERS_TREASURY_ADDRESS,
+      abi,
+      provider
+    );
+
+    // Send the transaction for signing/authorizing requested payment
+    const tx = await sendersTreasuryContract
+      .connect(signerWallet)
+      .signPayReq(requestId);
+
+    // Wait for the transaction to be mined
+    await tx.wait();
+
+    // Return the transaction hash
+    return tx.hash;
+  } catch (error) {
+    throw new Error(`Error thrown when authorize requested payment: ${error}`);
+  }
+}
+
+// receiver claims the payment when signed by sender
+export async function claimPay(requestId: BigNumber): Promise<string> {
+  try {
+    const { recoveredSeedPhrase } = await recoverAndValidateAutoId();
+
+    // client
+    const provider = new ethers.providers.JsonRpcProvider(NOVA_RPC_URL);
+
+    // get the sender (from Nova chain) if available with the recovered seed phrase
+    // & derivation path (1st index).
+    const signerWallet: Wallet = ethers.Wallet.fromMnemonic(
+      recoveredSeedPhrase,
+      `m/44'/60'/0'/0/0`
+    ).connect(provider);
+    await checkBalance(signerWallet.address, provider);
+
+    const sendersTreasuryContract: Contract = new ethers.Contract(
+      SENDERS_TREASURY_ADDRESS,
+      abi,
+      provider
+    );
+
+    // Send the transaction for signing/authorizing requested payment
+    const tx = await sendersTreasuryContract
+      .connect(signerWallet)
+      .claimPayment(requestId);
+
+    // Wait for the transaction to be mined
+    await tx.wait();
+
+    // Return the transaction hash
+    return tx.hash;
+  } catch (error) {
+    throw new Error(`Error thrown when claim requested payment: ${error}`);
   }
 }

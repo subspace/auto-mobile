@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import type { BigNumber, BigNumberish, Wallet } from 'ethers';
 import { SemaphoreSubgraph } from '@semaphore-protocol/data';
 import { recoverSeedFrom } from './recovery';
+import { getAutoIdFromSeed } from './did';
 
 /**
  * Convert string to Uint8Array
@@ -219,4 +220,32 @@ export async function approach1(
     groupId.toString(),
     identityCommitment.toString()
   );
+}
+
+interface SeedAutoId {
+  recoveredSeedPhrase: string;
+  autoId: string | bigint;
+}
+
+// recover and validate auto ID on Nova
+export async function recoverAndValidateAutoId(): Promise<SeedAutoId> {
+  // recover seed phrase from SSS shares stored in local DB
+  const recoveredSeedPhrase = await recoverSeedFrom();
+  if (!recoveredSeedPhrase) {
+    throw new Error('Seed phrase not recovered');
+  }
+
+  // generate the Auto ID from the seed phrase
+  const autoId = getAutoIdFromSeed(recoveredSeedPhrase as string);
+  if (!autoId) {
+    throw new Error("Auto ID doesn't exist");
+  }
+
+  // Ensure the user had already registered
+  // FIXME: Issue: https://github.com/subspace/auto-mobile/issues/28
+  // if (!(await isAutoIdVerified(autoId))) {
+  //   throw new Error(`Auto ID ${autoId} is not verified`);
+  // }
+
+  return { recoveredSeedPhrase, autoId };
 }
